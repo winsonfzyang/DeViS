@@ -42,3 +42,10 @@ Contact me @ winsonfz.yang@gmail.com for feedback or use the link to file bugs/f
 11. The **Descriptive Stats** tab added the ability to view the descriptives of your variables by group. The table output is also made almost-ready for publication. Some touch up is still needed to be done if you wish to utilize this table.
 
 13. The **E-mail** tab allows you to report bugs, send a feedback, and request for new features or updates. You can choose to uplaod an attachment to show what errors you have encountered. Click `send mail` to send the e-mail after completing the form.
+
+
+Contact me @ winsonfz.yang@gmail.com for feedback or use the link to file bugs/features/pull requests!
+<a href="https://github.com/winsonfzyang/DEViS/issues" target="_blank">Click Here to go to github</a>
+
+*Winson Yang 2018*
+
