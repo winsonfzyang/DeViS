@@ -6,7 +6,7 @@ fluidPage(
   useShinyjs(),
   includeCSS("www/app.css"),
   includeCSS("www/table1-style.css"),
-  titlePanel("DEViS V 0.4"),
+  titlePanel("DEViS V 1.0"),
   sidebarLayout(
     sidebarPanel(
       tabsetPanel(

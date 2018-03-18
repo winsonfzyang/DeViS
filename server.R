@@ -1349,31 +1349,39 @@ function(input, output, session) {
           if (input$groupin != 'None'& !input$boxplotignoregroup ){
             if (!input$boxplotignorecol){
               p <- p + aes_string(group=input$groupin)
-              p <- p + geom_boxplot(varwidth = input$boxplotvarwidh,notch = input$boxplotnotch,show.legend=input$boxplotshowlegend,alpha=input$boxplotalpha)
-              
+              p <- p + geom_boxplot(aes_string(group=input$groupin),
+                                    varwidth = input$boxplotvarwidh,
+                                    notch = input$boxplotnotch,
+                                    show.legend=input$boxplotshowlegend,
+                                    alpha=input$boxplotalpha)
             }
             if (input$boxplotignorecol){
               p <- p + aes_string(group=input$groupin)
-              p <- p + geom_boxplot(varwidth = input$boxplotvarwidh,notch = input$boxplotnotch,show.legend=input$boxplotshowlegend,col=input$boxcolline,alpha=input$boxplotalpha)
+              p <- p + geom_boxplot(aes_string(group=input$groupin),
+                                    varwidth = input$boxplotvarwidh,
+                                    notch = input$boxplotnotch,
+                                    show.legend=input$boxplotshowlegend,
+                                    col=input$boxcolline,
+                                    alpha=input$boxplotalpha)
               
             }
           }
           if (input$groupin == 'None'){
             if (!input$boxplotignorecol){
-              p <- p + geom_boxplot(aes(group=NULL),varwidth = input$boxplotvarwidh,notch = input$boxplotnotch,show.legend=input$boxplotshowlegend,alpha=input$boxplotalpha)
+              p <- p + geom_boxplot(aes_string(group=input$x),varwidth = input$boxplotvarwidh,notch = input$boxplotnotch,show.legend=input$boxplotshowlegend,alpha=input$boxplotalpha)
             }
             if (input$boxplotignorecol){
-              p <- p + geom_boxplot(aes(group=NULL),varwidth = input$boxplotvarwidh,notch = input$boxplotnotch,show.legend=input$boxplotshowlegend,col=input$boxcolline,alpha=input$boxplotalpha)
+              p <- p + geom_boxplot(aes_string(group=input$x),varwidth = input$boxplotvarwidh,notch = input$boxplotnotch,show.legend=input$boxplotshowlegend,col=input$boxcolline,alpha=input$boxplotalpha)
             } 
           }
           
           
           if (input$boxplotignoregroup ){
             if (!input$boxplotignorecol){
-              p <- p + geom_boxplot(aes(group=NULL),varwidth = input$boxplotvarwidh,notch = input$boxplotnotch,show.legend=input$boxplotshowlegend,alpha=input$boxplotalpha)
+              p <- p + geom_boxplot(aes_string(group=input$x),varwidth = input$boxplotvarwidh,notch = input$boxplotnotch,show.legend=input$boxplotshowlegend,alpha=input$boxplotalpha)
             }
             if (input$boxplotignorecol){
-              p <- p + geom_boxplot(aes(group=NULL),varwidth = input$boxplotvarwidh,notch = input$boxplotnotch,show.legend=input$boxplotshowlegend,col=input$boxcolline,alpha=input$boxplotalpha)
+              p <- p + geom_boxplot(aes_string(group=input$x),varwidth = input$boxplotvarwidh,notch = input$boxplotnotch,show.legend=input$boxplotshowlegend,col=input$boxcolline,alpha=input$boxplotalpha)
             }
           }
           
@@ -1398,23 +1406,23 @@ function(input, output, session) {
               if (input$Smooth=="Smooth")
                 p <- p + geom_smooth(method=input$smoothmethod,
                                      method.args = methodsargument,
-                                     size=1.5,se=F,span=spanplot,aes(group=NULL))
+                                     size=1.5,se=F,span=spanplot)
               
               if (input$Smooth=="Smooth and SE")
                 p <- p + geom_smooth(method=input$smoothmethod,
                                      method.args = methodsargument,
-                                     size=1.5,se=T,span=spanplot,aes(group=NULL))
+                                     size=1.5,se=T,span=spanplot)
               
               if (input$Smooth=="Smooth"& input$weightin != 'None')
                 p <- p + geom_smooth(method=input$smoothmethod,
                                      method.args = methodsargument,
-                                     size=1.5,se=F,span=spanplot,aes(group=NULL))+  
+                                     size=1.5,se=F,span=spanplot)+  
                   aes_string(weight=input$weightin)
               
               if (input$Smooth=="Smooth and SE"& input$weightin != 'None')
                 p <- p + geom_smooth(method=input$smoothmethod,
                                      method.args = methodsargument,
-                                     size=1.5,se=T,span=spanplot,aes(group=NULL))+  
+                                     size=1.5,se=T,span=spanplot)+  
                   aes_string(weight=input$weightin)
             }
             if (input$ignorecol) {
@@ -1422,23 +1430,24 @@ function(input, output, session) {
               if (input$Smooth=="Smooth")
                 p <- p + geom_smooth(method=input$smoothmethod,
                                      method.args = methodsargument,
-                                     size=1.5,se=F,span=spanplot,col=colsmooth,aes(group=NULL))
+                                     size=1.5,se=F,span=spanplot,col=colsmooth)
               
               if (input$Smooth=="Smooth and SE")
                 p <- p + geom_smooth(method=input$smoothmethod,
                                      method.args = methodsargument,
-                                     size=1.5,se=T,span=spanplot,col=colsmooth,aes(group=NULL))
+                                     size=1.5,se=T,span=spanplot,col=colsmooth)
               
               if (input$Smooth=="Smooth"& input$weightin != 'None')
                 p <- p + geom_smooth(method=input$smoothmethod,
                                      method.args = methodsargument,
-                                     size=1.5,se=F,span=spanplot,col=colsmooth,aes(group=NULL))+  
+                                     size=1.5,se=F,span=spanplot,col=colsmooth)+  
                 aes_string(weight=input$weightin)
               
               if (input$Smooth=="Smooth and SE"& input$weightin != 'None')
                 p <- p + geom_smooth(method=input$smoothmethod,
                                      method.args = methodsargument,
-                                     size=1.5,se=T,span=spanplot,col=colsmooth,aes(group=NULL))+  
+                                     size=1.5,se=T,span=spanplot,col=colsmooth)+  
+                                     # size=1.5,se=T,span=spanplot,col=colsmooth,aes(group=NULL))+  
                 aes_string(weight=input$weightin)
             }
             
