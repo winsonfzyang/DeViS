@@ -2,8 +2,7 @@
 
 R Shiny app as a handy inteface to ggplot2. It enables you to quickly explore, visualize, your data, and run some analyses to detect trends and insights. You can do scatter plots, dotplots, boxplots, barplots, histograms and densities.
 
-**Export Plots** and **Plot Code** tabs. Once a plot is saved in the **Scatter/Regression Plot** tab by providing a name and hitting the **Save plot** star button it will become available for exporting. You can export in portrait, landscape and multiple plots per page.  
-**Plot Code** will let you look at the source code that generated the plot with the various options.
+**Export Plots**. Once a plot is saved in the **Scatter/Regression Plot** tab by providing a name and hitting the **Save plot** star button it will become available for exporting. You can export in portrait, landscape and multiple plots per page.  
 
 
 ### CSV and EXCEL Data Input 
