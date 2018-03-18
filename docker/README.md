@@ -1,6 +1,6 @@
 # ggplotwithyourdata
 
-Docker configuration for the shiny app [ggplotwithyourdata](https://github.com/smouksassi/ggplotwithyourdata).
+Docker configuration for the shiny app [DEViS](https://github.com/winsonfzyang/DEViS).
 
 
 
@@ -9,8 +9,8 @@ Docker configuration for the shiny app [ggplotwithyourdata](https://github.com/s
 Run:
 
 ```bash
-sudo docker pull smouksassi/ggplotwithyourdata
-sudo docker run -i -t -p 3838:3838 smouksassi/ggplotwithyourdata
+sudo docker pull winsonfzyang/DEViS
+sudo docker run -i -t -p 3838:3838 winsonfzyang/DEViS
 ```
 
 
