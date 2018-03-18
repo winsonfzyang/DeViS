@@ -1,6 +1,6 @@
 # DeViS
 
-R Shiny app as a handy inteface to ggplot2. It enables you to quickly explore, visualize, your data, and run some analyses to detect trends and insights. You can do scatter plots, dotplots, boxplots, barplots, histograms and densities.
+DEViS stands for Data Exploration Visualization and Statistics. DEViS enables you to quickly explore, visualize, your data, and run some analyses to detect trends and insights. You can do scatter plots, dotplots, boxplots, barplots, histograms and densities.
 
 **Export Plots**. Once a plot is saved in the **Scatter/Regression Plot** tab by providing a name and hitting the **Save plot** star button it will become available for exporting. You can export in portrait, landscape and multiple plots per page.  
 
