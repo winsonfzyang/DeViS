@@ -22,7 +22,7 @@ Contact me @ winsonfz.yang@gmail.com for feedback or use the link to file bugs/f
     + In the **Reorder Variables** sub-tab:  
     There is a group of options to allow you to reorder a categorical variable is several ways. ***Reorder This Variable:*** allows you to select and reorder a categorical variable ***By the:***  `Median`,`Mean`,`Minimum` or `Maximum` of ***Of this Variable:*** where you pick a numerical variable of your choice the default is to use the `Median` of `yvalues`. You can also check the ***Reverse Order ?*** box to have the order inverted. The ***Custom Reorder this variable*** will create an input field with unique values of the selected variable and then you can drag and drop the values to the order of your choice. Finally the  ***Change labels of this variable:*** is an additional place where you can change the names of the levels of a character variable like the one holding the names of the selected y variables `yvars` which is handy if you want to change the names in the facet labels.  
 
-7.The **Graph Options** tab allows the user to manipulate the overall appearance of the graph, and also for the user to input the variables of interests.  
+7. The **Graph Options** tab allows the user to manipulate the overall appearance of the graph, and also for the user to input the variables of interests.  
     + The ***X/Y Axes/ Log/Labels*** sub-tab allows users to input their x and y variables, and also relabel them. Furthermore there is also an option to add covariates which will be used to created adjusted y variables in the graph and the regression model  
 
 8. The **Types of Graphs** allows users to control which features and layers to include.  
