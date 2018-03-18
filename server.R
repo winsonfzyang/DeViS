@@ -2752,6 +2752,14 @@ function(input, output, session) {
     
   })
   
+  # Effect size
+  output$regeffectsize <- renderPrint({
+    xreg.model <- fit.beta.obj()
+      modelEffectSizes(xreg.model)
+  })
+  
+  
+  
   # UPDATE NOT AVAILABLE 
   # get predicted values from regression
   predicted_val <- reactive({

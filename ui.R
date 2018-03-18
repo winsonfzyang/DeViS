@@ -868,7 +868,7 @@ fluidPage(
                        ),#wellpanel
                        h4("Regression Effect Size"),
                        wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
-                                 verbatimTextOutput("Regression_Effect_Size")
+                                 verbatimTextOutput("regeffectsize")
                        )#wellpanel
                 )#column
               ) #fluidrow
@@ -1039,6 +1039,7 @@ fluidPage(
         tabPanel("E-mail",
                  mainPanel(
                    h3("Please use this tab if you want to send a message. You can report bugs, send a feedback, or request for a new feature."),
+                   h4("E-MAIL TAB IS CURRENTLY NOT WORKING."),
                    textInput("name", "Name:", ""),
                    textInput("email", "E-mail:", ""),
                    textInput("subject", "Subject:", value=""),
