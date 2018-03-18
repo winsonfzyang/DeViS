@@ -1,5 +1,6 @@
 ﻿Please read the How to to make sure you are using the app as intented.
 Contact me @ winsonfz.yang@gmail.com for feedback or use the link to file bugs/features/pull requests!
+
 1. Upload your data file in CSV vor XLS format. R default options for will apply except for missing values where both (NA) and dot (.) are treated as missing. If your data has columns with other non-numeric missing value codes then they will be treated as factors.
 
 2. The UI is dynamic and changes depending on your choices of options, x ,y, filter, group and so on.

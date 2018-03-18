@@ -8,10 +8,9 @@ fluidPage(
   includeCSS("www/table1-style.css"),
   titlePanel("DEViS V 0.4"),
   sidebarLayout(
-    #### SIDEBAR PANEL -----------------
     sidebarPanel(
       tabsetPanel(
-        #### Inputs ####
+        ### INPUTS ----
         tabPanel(
           "Inputs", 
           br(),
@@ -25,7 +24,7 @@ fluidPage(
             id = "filtercategorize",
             type = "pills",
             
-            #### Filter tab ----
+            # ---- Filters ----
             tabPanel(
               "Filters", 
               uiOutput("maxlevels"),
@@ -42,12 +41,11 @@ fluidPage(
               uiOutput("filtervarcont3"),
               uiOutput("fslider3")
             ),
-            
-            #### Categorize/Recode tab ----
+            # ---- Categorize ----
             tabPanel(
               "Categorize/Recode", 
-              # uiOutput("catvar"),
-              # uiOutput("ncuts"),
+              uiOutput("catvar"),
+              uiOutput("ncuts"),
               uiOutput("catvar2"),
               uiOutput("catvar3"),
               uiOutput("ncuts2"),
@@ -60,36 +58,34 @@ fluidPage(
                 actionButton("factor_lvl_change_add", "Add another variable", icon("plus"))
               ))
             ),
+            # ---- Combine two variables ----
+            tabPanel("Combine Two Variables",
+                     h6("Combined variables can be used for colour, fill, group, size and facets. They cannot be used as X or Y variables."),
+                     
+                     uiOutput("pastevar")
+            ),
             
-            # FEATURE DISABLED
-            # tabPanel("Combine Two Variables",
-            #          h6("Combined variables can be used for colour, fill, group, size and facets. They cannot be used as X or Y variables."),
-            #          
-            #          uiOutput("pastevar")
-            # ),
-        
-            # FEATURE DISABLED
-            # tabPanel(
-            #   "Simple Rounding",
-            #   uiOutput("roundvar"),
-            #   numericInput("rounddigits",label = "N Digits",value = 0,min=0,max=10) 
-            # ),
-            
-            #### Reorder variables tab ----
+            # ---- Simple rounding ----
+            tabPanel(
+              "Simple Rounding",
+              uiOutput("roundvar"),
+              numericInput("rounddigits",label = "N Digits",value = 0,min=0,max=10) 
+            ),
+            # ---- Reorder variables ----
             tabPanel(
               "Reorder Variables", 
-              # uiOutput("reordervar"),
-              # conditionalPanel(
-              #   condition = "input.reordervarin!='' " ,
-              #   selectizeInput(
-              #     "functionordervariable", 'By the:',
-              #     choices =c("Median","Mean","Minimum","Maximum") ,multiple=FALSE)
-              # ),
-              # uiOutput("variabletoorderby"),
-              # conditionalPanel(
-              #   condition = "input.reordervarin!='' " ,
-              #   checkboxInput('reverseorder', 'Reverse Order ?', value = FALSE)
-              # ),
+              uiOutput("reordervar"),
+              conditionalPanel(
+                condition = "input.reordervarin!='' " ,
+                selectizeInput(
+                  "functionordervariable", 'By the:',
+                  choices =c("Median","Mean","Minimum","Maximum") ,multiple=FALSE)
+              ),
+              uiOutput("variabletoorderby"),
+              conditionalPanel(
+                condition = "input.reordervarin!='' " ,
+                checkboxInput('reverseorder', 'Reverse Order ?', value = FALSE)
+              ),
               
               uiOutput("reordervar2"),
               uiOutput("reordervar2values"),
@@ -98,74 +94,83 @@ fluidPage(
               uiOutput("catvar5"),
               textOutput("labeltext5"),
               uiOutput("nlabels5")
+            ),
+            
+            # ---- One row -----
+            tabPanel(
+              "One Row by ID(s)",
+              checkboxInput('filtertoonerowbyid', 'Filter to One Row by ID(s)?', value = FALSE),
+              conditionalPanel(
+                condition = "input.filtertoonerowbyid" ,
+                uiOutput("onerowidgroup")
+              )
+              
             )
           ),
           hr()
-        ), # tabPanel
+        ), # tabpanel Inputs
         
-        #### Graph Options -----------
+        #### XY AXES ----
         tabPanel(
-          "Graph Options",
+          "X & Y Axes/Labels",
+          hr(),
+          uiOutput("xcol"),
+          textInput('xlab', 'X axis label', value = "") ,
+          uiOutput("scatter_covar"),
+          uiOutput("ycol"),
+          textInput('ylab', 'Y axis label', value = "") ,
+          hr(),
+          
+          div(style="display:inline-block",
+              id = "plot-log-opts",
+              checkboxInput('logy', 'Log Y axis', value = FALSE) ,
+              checkboxInput('logx', 'Log X axis', value = FALSE) ,
+              checkboxInput('logyformat', 'Log Y 10^x Format', value = FALSE) ,
+              checkboxInput('logxformat', 'Log X 10^x Format', value = FALSE) 
+          ),
+          conditionalPanel(condition = "!input.logy" ,
+                           checkboxInput('scientificy', 'Comma separated Y axis ticks', value = FALSE)),
+          conditionalPanel(condition = "!input.logx" ,
+                           checkboxInput('scientificx', 'Comma separated X axis ticks', value = FALSE)),
+          conditionalPanel(condition = "!input.logy" ,
+                           checkboxInput('percenty', 'Percent Y axis ticks', value = FALSE)),
+          conditionalPanel(condition = "!input.logx" ,
+                           checkboxInput('percentx', 'Percent X axis ticks', value = FALSE)),
+          checkboxInput('rotateyticks', 'Rotate/Justify Y axis Ticks ?', value = FALSE),
+          checkboxInput('rotatexticks', 'Rotate/Justify X axis Ticks ?', value = FALSE),
+          conditionalPanel(condition = "input.rotateyticks" , 
+                           sliderInput("yticksrotateangle", "Y axis ticks angle:", min=0, max=360, value=c(0),step=10),
+                           sliderInput("ytickshjust", "Y axis ticks horizontal justification:", min=0, max=1, value=c(0.5),step=0.1),
+                           sliderInput("yticksvjust", "Y axis ticks vertical justification:", min=0, max=1, value=c(0.5),step=0.1)
+          ),
+          conditionalPanel(condition = "input.rotatexticks" , 
+                           sliderInput("xticksrotateangle", "X axis ticks angle:", min=0, max=360, value=c(20),step=10),
+                           sliderInput("xtickshjust", "X axis ticks horizontal justification:", min=0, max=1, value=c(1),step=0.1),
+                           sliderInput("xticksvjust", "X axis ticks vertical justification:", min=0, max=1, value=c(1),step=0.1)
+          ),
+          checkboxInput('customxticks', 'Custom X axis Ticks ?', value = FALSE),
+          conditionalPanel(condition = "input.customxticks" , 
+                           textInput("xaxisbreaks",label ="X axis major Breaks",
+                                     value = as.character(paste(
+                                       0,12,24
+                                       ,sep=",") )
+                           ),
+                           textInput("xaxisminorbreaks",label ="X axis minor Breaks",
+                                     value = as.character(paste(
+                                       6,18
+                                       ,sep=",") )
+                           )
+          )
+        ),
+        
+        ### Graph options----
+        tabPanel(
+          "Graph Layout",
           tabsetPanel(
             id = "graphicaloptions",
             
-            # ---- X/Y Axes ----
-            tabPanel(
-              "X/Y Axes Log/Labels",
-              hr(),
-              ## x variable
-              uiOutput("xcol"),
-              textInput('xlab', 'X axis label', value = "") ,
-              ## Add covariates
-              uiOutput("scatter_covar"),
-              ## y variable
-              uiOutput("ycol"),
-              textInput('ylab', 'Y axis label', value = "") ,
-              hr(),
-              
-              # div(style="display:inline-block",
-              #   id = "plot-log-opts",
-              #   checkboxInput('logy', 'Log Y axis', value = FALSE) ,
-              #   checkboxInput('logx', 'Log X axis', value = FALSE) ,
-              #   checkboxInput('logyformat', 'Log Y 10^x Format', value = FALSE) ,
-              #   checkboxInput('logxformat', 'Log X 10^x Format', value = FALSE) 
-              # ),
-              # conditionalPanel(condition = "!input.logy" ,
-              #                  checkboxInput('scientificy', 'Comma separated Y axis ticks', value = FALSE)),
-              # conditionalPanel(condition = "!input.logx" ,
-              #                  checkboxInput('scientificx', 'Comma separated X axis ticks', value = FALSE)),
-              # conditionalPanel(condition = "!input.logy" ,
-              #                  checkboxInput('percenty', 'Percent Y axis ticks', value = FALSE)),
-              # conditionalPanel(condition = "!input.logx" ,
-              #                  checkboxInput('percentx', 'Percent X axis ticks', value = FALSE)),
-              checkboxInput('rotateyticks', 'Rotate/Justify Y axis Ticks ?', value = FALSE),
-              checkboxInput('rotatexticks', 'Rotate/Justify X axis Ticks ?', value = FALSE),
-              conditionalPanel(condition = "input.rotateyticks" , 
-                               sliderInput("yticksrotateangle", "Y axis ticks angle:", min=0, max=360, value=c(0),step=10),
-                               sliderInput("ytickshjust", "Y axis ticks horizontal justification:", min=0, max=1, value=c(0.5),step=0.1),
-                               sliderInput("yticksvjust", "Y axis ticks vertical justification:", min=0, max=1, value=c(0.5),step=0.1)
-              ),
-              conditionalPanel(condition = "input.rotatexticks" , 
-                               sliderInput("xticksrotateangle", "X axis ticks angle:", min=0, max=360, value=c(20),step=10),
-                               sliderInput("xtickshjust", "X axis ticks horizontal justification:", min=0, max=1, value=c(1),step=0.1),
-                               sliderInput("xticksvjust", "X axis ticks vertical justification:", min=0, max=1, value=c(1),step=0.1)
-              ),
-              checkboxInput('customxticks', 'Custom X axis Ticks ?', value = FALSE),
-              conditionalPanel(condition = "input.customxticks" , 
-                               textInput("xaxisbreaks",label ="X axis major Breaks",
-                                         value = as.character(paste(
-                                           0,12,24
-                                           ,sep=",") )
-                               ),
-                               textInput("xaxisminorbreaks",label ="X axis minor Breaks",
-                                         value = as.character(paste(
-                                           6,18
-                                           ,sep=",") )
-                               )
-                               )
-            ),
             
-            # ---- Graph Size/Zoom ----
+            # ---- Graph size ----
             tabPanel(
               "Graph Size/Zoom",
               sliderInput("height", "Plot Height", min=1080/4, max=1080, value=480, animate = FALSE),
@@ -180,7 +185,7 @@ fluidPage(
               
             ),
             
-            # ---- Background Color and Legend(s) ----
+            # ---- Background ----
             tabPanel(
               "Background Color and Legend(s)",
               selectInput('backgroundcol', label ='Background Color',
@@ -224,7 +229,7 @@ fluidPage(
               )
             ),
             
-            # ---- Facet options ----
+            # ---- Facets ----
             tabPanel(
               "Facets Options",
               
@@ -269,8 +274,7 @@ fluidPage(
                 )
               ) ,
             
-            
-            # ---- Reference Lines ----
+            # ---- Reference lines ----
             tabPanel(
               "Reference Lines/Target",
               checkboxInput('identityline', 'Identity Line')    ,   
@@ -326,278 +330,412 @@ fluidPage(
               conditionalPanel(condition = "input.themeaspect" , 
                                numericInput("aspectratio",label = "Y/X ratio",
                                             value = 1,min=0.1,max=10,step=0.01)) 
-            ) #tabpanel
-          )#tabsetpanel
-          ), # tabpanel
-        #) ,#tabsetPanel(),
-        
-        
-        
-        #### Types of Graphs -----------------
-          tabPanel(
-            "Types of Graphs",
-            tabsetPanel(
-              id = "graphicaltypes",selected = "Color/Group/Split/Size/Fill Mappings (?)",
-              tabPanel(
-                "Plot types, Points, Lines (?)",
-                
-                fluidRow(
-                  
-                  column (12, hr()),
-                  column (
-                    3,
-                    radioButtons("Points", "Points/Jitter:",
-                                 c("Points" = "Points",
-                                   "Jitter" = "Jitter",
-                                   "None" = "None")),
-                    conditionalPanel(
-                      " input.Points!= 'None' ",
-                      sliderInput("pointstransparency", "Points Transparency:", min=0, max=1, value=c(0.5),step=0.01),
-                      checkboxInput('pointignorecol', 'Ignore Mapped Color')
-                    )
-                  ),
-                  column(
-                    3,
-                    conditionalPanel(
-                      " input.Points!= 'None' ",
-                      sliderInput("pointsizes", "Points Size:", min=0, max=4, value=c(1),step=0.1),
-                      numericInput('pointtypes','Points Type:',16, min = 1, max = 25),
-                      conditionalPanel(
-                        " input.pointignorecol ",
-                        selectInput('colpoint', label ='Points Color', choices=colors(),
-                                    multiple=FALSE, selectize=TRUE, selected="black") 
-                      )
-                    )
-                  ),
-                  column(
-                    3,
-                    radioButtons("line", "Lines:",
-                                 c("Lines" = "Lines",
-                                   "None" = "None"),selected="None"),
-                    conditionalPanel(
-                      " input.line== 'Lines' ",
-                      sliderInput("linestransparency", "Lines Transparency:", min=0, max=1, value=c(0.5),step=0.01),
-                      checkboxInput('lineignorecol', 'Ignore Mapped Color'),
-                      checkboxInput('lineignoresize', 'Ignore Mapped Size')
-                    )
-                  ),
-                  column(
-                    3,
-                    conditionalPanel(
-                      " input.line== 'Lines' ",
-                      sliderInput("linesize", "Lines Size:", min=0, max=4, value=c(1),step=0.1),
-                      selectInput('linetypes','Lines Type:',c("solid","dotted")),
-                      conditionalPanel(
-                        " input.lineignorecol ",
-                        selectInput('colline', label ='Lines Color', choices=colors(),
-                                    multiple=FALSE, selectize=TRUE,selected="black") 
-                      )
-                    )
-                  ),
-                  column (12,
-                          h6("Points and Lines Size will apply only if Size By: in the Color Group Split Size Fill Mappings are set to None"))
-                  
-                )#fluidrow
-              ), # tabpanel
+              ) #tabpanel
+            )#tabsetpanel
+          ), # tabpanel Graph options
+        #### TYPES OF GRAPHS ####
+        tabPanel(
+          "Graph Features",
+          tabsetPanel(
+            id = "graphicaltypes",selected = "Color/Group/Split/Size/Fill Mappings (?)",
+            
+            # ---- Plot types -----
+            tabPanel(
+              "Plot types, Points, Lines (?)",
               
-              #### Color/Group/Split/Size/Fill Mappings ####
-              tabPanel(
-                "Color/Group/Split/Size/Fill Mappings (?)",
-                fluidRow(
-                  column (12, hr()),
-                  column (3, uiOutput("colour"),uiOutput("group")),
-                  column(3, uiOutput("facet_col"),uiOutput("facet_row")),
-                  column (3, uiOutput("facet_col_extra"),uiOutput("facet_row_extra")),
-                  column (3, uiOutput("pointsize"),uiOutput("fill")),
-                  column (12, h6("Make sure not to choose a variable that is in the y variable(s) list otherwise you will get an error Variable not found. These variables are stacked and become yvars and yvalues.This ensures that colour/group/etc. are kept intact when you apply a new filter or recode a variable. When you combine variables all mappings will be updated so you can choose the newly formed variable and as such the previous state will be lost." ))
+              fluidRow(
+                
+                column (12, hr()),
+                column (
+                  3,
+                  radioButtons("Points", "Points/Jitter:",
+                               c("Points" = "Points",
+                                 "Jitter" = "Jitter",
+                                 "None" = "None")),
+                  conditionalPanel(
+                    " input.Points!= 'None' ",
+                    sliderInput("pointstransparency", "Points Transparency:", min=0, max=1, value=c(0.5),step=0.01),
+                    checkboxInput('pointignorecol', 'Ignore Mapped Color')
+                  )
+                ),
+                column(
+                  3,
+                  conditionalPanel(
+                    " input.Points!= 'None' ",
+                    sliderInput("pointsizes", "Points Size:", min=0, max=4, value=c(1),step=0.1),
+                    numericInput('pointtypes','Points Type:',16, min = 1, max = 25),
+                    conditionalPanel(
+                      " input.pointignorecol ",
+                      selectInput('colpoint', label ='Points Color', choices=colors(),
+                                  multiple=FALSE, selectize=TRUE, selected="black") 
+                    )
+                  )
+                ),
+                column(
+                  3,
+                  radioButtons("line", "Lines:",
+                               c("Lines" = "Lines",
+                                 "None" = "None"),selected="None"),
+                  conditionalPanel(
+                    " input.line== 'Lines' ",
+                    sliderInput("linestransparency", "Lines Transparency:", min=0, max=1, value=c(0.5),step=0.01),
+                    checkboxInput('lineignorecol', 'Ignore Mapped Color'),
+                    checkboxInput('lineignoresize', 'Ignore Mapped Size')
+                  )
+                ),
+                column(
+                  3,
+                  conditionalPanel(
+                    " input.line== 'Lines' ",
+                    sliderInput("linesize", "Lines Size:", min=0, max=4, value=c(1),step=0.1),
+                    selectInput('linetypes','Lines Type:',c("solid","dotted")),
+                    conditionalPanel(
+                      " input.lineignorecol ",
+                      selectInput('colline', label ='Lines Color', choices=colors(),
+                                  multiple=FALSE, selectize=TRUE,selected="black") 
+                    )
+                  )
+                ),
+                column (12,
+                        h6("Points and Lines Size will apply only if Size By: in the Color Group Split Size Fill Mappings are set to None"))
+                
+              )#fluidrow
+            ), # tabpanel
+            
+            # ---- Color/Group ----
+            tabPanel(
+              "Color/Group/Split/Size/Fill Mappings (?)",
+              fluidRow(
+                column (12, hr()),
+                column (3, uiOutput("colour"),uiOutput("group")),
+                column(3, uiOutput("facet_col"),uiOutput("facet_row")),
+                column (3, uiOutput("facet_col_extra"),uiOutput("facet_row_extra")),
+                column (3, uiOutput("pointsize"),uiOutput("fill")),
+                column (12, h6("Make sure not to choose a variable that is in the y variable(s) list otherwise you will get an error Variable not found. These variables are stacked and become yvars and yvalues.This ensures that colour/group/etc. are kept intact when you apply a new filter or recode a variable. When you combine variables all mappings will be updated so you can choose the newly formed variable and as such the previous state will be lost." ))
+                
+              )
+            ),#tabpanel
+            
+            # ---- Box plots ----
+            tabPanel(
+              "Boxplots",
+              fluidRow(
+                column (12, h6("Limited Boxplots support. Options are to be added as per users requests.")),
+                
+                column (
+                  4,
+                  checkboxInput('boxplotaddition', 'Add a Boxplot ? (makes sense if x variable is categorical and
+                                you Group By a sensible choice. By default the x variable is used for grouping)'),
+                  checkboxInput('boxplotignoregroup', 'Ignore Mapped Group ? (can be helpful to superpose a loess or median on top of the boxplot)',value = TRUE)
+                ),
+                column (
+                  4,
+                  checkboxInput('boxplotvarwidh', "Boxes proportional to the square-roots of the number of observations ?" ),
+                  checkboxInput('boxplotnotch', "Notched Boxes ?.
+                                Notches are used to compare groups; if the notches of two boxes do not overlap, this suggests that the medians are significantly different." ),
+                  checkboxInput('boxplotshowlegend', "Show Legend ?", value=TRUE)
+                  ),
+                
+                column(
+                  4,
+                  checkboxInput('boxplotignorecol', 'Ignore Mapped Color'),
+                  conditionalPanel(
+                    " input.boxplotignorecol " ,
+                    selectInput('boxcolline', label ='Box Outlines Color',
+                                choices=colors(),multiple=FALSE, selectize=TRUE,selected="black")
+                  ),
+                  sliderInput("boxplotalpha", "Boxplot Transparency:", min=0, max=1, value=c(0.2),step=0.01)
                   
                 )
-              ),#tabpanel
-              
-              #### Boxplots ####
-              tabPanel(
-                "Boxplots",
-                fluidRow(
-                  column (12, h6("Limited Boxplots support. Options are to be added as per users requests.")),
-                  
-                  column (
-                    4,
-                    checkboxInput('boxplotaddition', 'Add a Boxplot ? (makes sense if x variable is categorical and
-                                  you Group By a sensible choice. By default the x variable is used for grouping)'),
-                    checkboxInput('boxplotignoregroup', 'Ignore Mapped Group ? (can be helpful to superpose a loess or median on top of the boxplot)',value = TRUE)
-                  ),
-                  column (
-                    4,
-                    checkboxInput('boxplotvarwidh', "Boxes proportional to the square-roots of the number of observations ?" ),
-                    checkboxInput('boxplotnotch', "Notched Boxes ?.
-                                  Notches are used to compare groups; if the notches of two boxes do not overlap, this suggests that the medians are significantly different." ),
-                    checkboxInput('boxplotshowlegend', "Show Legend ?", value=TRUE)
-                    ),
-                  
-                  column(
-                    4,
-                    checkboxInput('boxplotignorecol', 'Ignore Mapped Color'),
-                    conditionalPanel(
-                      " input.boxplotignorecol " ,
-                      selectInput('boxcolline', label ='Box Outlines Color',
-                                  choices=colors(),multiple=FALSE, selectize=TRUE,selected="black")
-                    ),
-                    sliderInput("boxplotalpha", "Boxplot Transparency:", min=0, max=1, value=c(0.2),step=0.01)
-                    
-                  )
-                  
-                )#fluidrow 
                 
-                  ),
-              #### Histogram/Densiy/Bar ####
-              tabPanel(
-                "Histograms/Density/Bar",
-                value = "histograms_density",
-                fluidRow(
-                  column (12, h6("A plot of the mapped x variable
-                                 will be produced when no y variable(s) are selected.This is still limited. Options are to be added as per users requests.")),
-                  column(
-                    3,
-                    checkboxInput('histogramaddition', 'Add a Histogram ?',value = TRUE),
-                    # Add mean lines
-                    checkboxInput('mlineaddition', 'Add a Mean line ?',value = FALSE)
-                    ),
-                  column(
-                    3,
-                    checkboxInput('densityaddition', 'Add a Density Curve ?',value = TRUE)
-                    ),
-                  
-                  column(
-                    3,
-                    checkboxInput('barplotaddition', 'Add a Barplot ?',value = TRUE),
-                    selectInput("positionbar", label = "Bar positioning:",
-                                choices = c("Stacked"="position_stack(vjust = 0.5)",
-                                            "Side By Side"="position_dodge(width = 0.9)",
-                                            "Sum to 100%"="position_fill(vjust = 0.5)"),
-                                selected = "position_stack(vjust = 0.5)"),
-                    checkboxInput('barplotpercent', 'Show Percentage instead of Counts ?',value = FALSE),
-                    checkboxInput('barplotlabel', 'Show Labels ?',value = FALSE),
-                    checkboxInput('barplotflip', 'Flip the Barplot ?',value = FALSE)
-                    
-                  )
-                  )
-              ),
+              )#fluidrow 
               
-              
-              #### Smooth/Linear/Log Regression -----
-              tabPanel(
-                "Smooth/Linear/Logistic Regressions (?)",
+                ),
+            # ---- Histograms ----
+            tabPanel(
+              "Histograms/Density/Bar",
+              value = "histograms_density",
+              fluidRow(
+                column (12, h6("A plot of the mapped x variable
+                               will be produced when no y variable(s) are selected.This is still limited. Options are to be added as per users requests.")),
                 
-                fluidRow(
-                  column(12,hr()),
-                  column (
-                    3, 
-                    radioButtons("Smooth", "Smooth:",
-                                 c("Smooth" = "Smooth",
-                                   "Smooth and SE" = "Smooth and SE",
-                                   "None" = "None"),selected="None")
+                column (
+                  3,
+                  checkboxInput('histogramaddition', 'Add a Histogram ?',value = FALSE),
+                  checkboxInput('mlineaddition', 'Add a Mean line ?',value = FALSE)
                   ),
-                  column (
-                    3, 
-                    conditionalPanel(
-                      " input.Smooth!= 'None' ",
-                      selectInput('smoothmethod', label ='Smoothing Method',
-                                  choices=c("Loess" ="loess","Linear Fit"="lm","Logistic"="glm"),
-                                  multiple=FALSE, selectize=TRUE,selected="loess"),
-                      
-                      sliderInput("loessens", "Loess Span:", min=0, max=1, value=c(0.75),step=0.05),
-                      selectInput('loessfamily', label ='Loess Family:',
-                                  choices=c("Gaussian" ="gaussian","Symmetric"="symmetric"),
-                                  multiple=FALSE, selectize=TRUE,selected="gaussian"),
-                      sliderInput("loessdegree", "Loess Degree:", min=0, max=2, value=c(1),step=1)
-                      
-                    ) 
-                  ),
+                column (
+                  3,
+                  checkboxInput('densityaddition', 'Add a Density Curve ?',value = TRUE)
+                ),
+                
+                column (
+                  3,
+                  checkboxInput('barplotaddition', 'Add a Barplot ?',value = TRUE),
+                  selectInput("positionbar", label = "Bar positioning:",
+                              choices = c("Stacked"="position_stack(vjust = 0.5)",
+                                          "Side By Side"="position_dodge(width = 0.9)",
+                                          "Sum to 100%"="position_fill(vjust = 0.5)"),
+                              selected = "position_stack(vjust = 0.5)"),
+                  checkboxInput('barplotpercent', 'Show Percentage instead of Counts ?',value = FALSE),
+                  checkboxInput('barplotlabel', 'Show Labels ?',value = FALSE),
+                  checkboxInput('barplotflip', 'Flip the Barplot ?',value = FALSE)
                   
-                  column (
-                    3,  conditionalPanel( " input.Smooth!= 'None' ",
-                                          checkboxInput('ignorecol', 'Ignore Mapped Color'),
-                                          conditionalPanel(
-                                            " input.ignorecol ",
-                                            selectInput('colsmooth', label ='Smooth Color', choices=colors(),
-                                                        multiple=FALSE, selectize=TRUE,selected="black") )
-                                          
-                    )
-                  ),
-                  column (
-                    3, conditionalPanel(
-                      " input.Smooth!= 'None' ",
-                      checkboxInput('ignoregroup', 'Ignore Mapped Group',value = TRUE)
-                    ) ,
-                    uiOutput("weight"))
-                  
-                )#fluidrow
-              ),
-              # #### Mean CI section ####
-              # tabPanel(
-              #   "Mean CI (?)",
-              #   
-              #   fluidRow(
-              #     column(12,hr()),
-              #     column (3, 
-              #             radioButtons("Mean", "Mean:",
-              #                          c("Mean" = "Mean",
-              #                            "Mean/CI" = "Mean/CI",
-              #                            "None" = "None") ,selected="None") 
-              #     ),
-              #     column (
-              #       3,
-              #       
-              #       conditionalPanel(
-              #         " input.Mean== 'Mean/CI' ",
-              #         sliderInput("CI", "CI %:", min=0, max=1, value=c(0.95),step=0.01),
-              #         numericInput( inputId = "errbar",label = "CI bar width:",value = 2,min = 1,max = NA)      
-              #       )
-              #       
-              #     ),
-              #     column (
-              #       3,
-              #       conditionalPanel(
-              #         " input.Mean!= 'None' ",
-              #         checkboxInput('meanpoints', 'Show points') ,
-              #         checkboxInput('meanlines', 'Show lines', value=TRUE),
-              #         checkboxInput('meanignorecol', 'Ignore Mapped Color') ,
-              #         conditionalPanel( " input.meanignorecol ",
-              #                           selectInput('colmean', label ='Mean Color', choices=colors(),multiple=FALSE, selectize=TRUE,selected="black") )
-              #         
-              #       ) ),
-              #     
-              #     
-              #     column(
-              #       3,
-              #       conditionalPanel(
-              #         " input.Mean!= 'None' ",
-              #         checkboxInput('meanignoregroup', 'Ignore Mapped Group',value = TRUE),
-              #         sliderInput("meanlinesize", "Mean(s) Line(s) Size:", min=0, max=3, value=1,step=0.05)
-              #       ) 
-              #     )
-              #   ) #fluidrow
-              # ), # tab panel for mean
-              # 
-              #### Correlation coefficient ####
-              tabPanel(
-                "Correlation Coefficient (?)",
-                fluidRow(
-                  column(12,hr()),
-                  checkboxInput('addcorrcoeff',"Add Correlation Coefficient to the plot ?"),
-                  checkboxInput('addcorrcoeffignoregroup',"Ignore Mapped Group ?", value=TRUE)
-                  )#fluidrow
-                )##tabpanel corr
-              )#tabsetPanel
-            ),#tabPanel
+                )
+                )
+            ),
+            
+            
+            # # ---- rqss quantile regression ----
+            # tabPanel(
+            #   "Quantile Regression (?)",
+            #   
+            #   fluidRow(
+            #     column(12,hr()),
+            #     column(
+            #       3,
+            #       checkboxInput('Tauvalue', 'Dynamic and Preset Quantiles', value = FALSE),
+            #       h5("Preset Quantiles"),
+            #       checkboxInput('ninetyseventh', '97%'),
+            #       checkboxInput('up', '95%'),
+            #       checkboxInput('ninetieth', '90%'),
+            #       checkboxInput('mid', '50%', value = FALSE),
+            #       checkboxInput('tenth', '10%'),
+            #       checkboxInput('low', '5%'),
+            #       checkboxInput('third', '3%')
+            #     ),
+            #     column(
+            #       5,
+            #       sliderInput("Tau", label = "Dynamic Quantile Value:",
+            #                   min = 0, max = 1, value = 0.5, step = 0.01)  ,
+            #       sliderInput("Penalty", label = "Spline sensitivity adjustment:",
+            #                   min = 0, max = 100, value = 1, step = 0.1)  ,
+            #       selectInput("Constraints", label = "Spline constraints:",
+            #                   choices = c("None"="N","Increasing"="I","Decreasing"="D","Convex"="V","Concave"="C",
+            #                               "Convex and Increasing"="VI", "Convex and Decreasing"= "VD",
+            #                               "Concave and Increasing"="CI","Concave and Decreasing"= "CD"),
+            #                   selected = "N")
+            #       
+            #     ),
+            #     column(
+            #       3,
+            #       checkboxInput('ignorecolqr', 'Ignore Mapped Color'),
+            #       checkboxInput('ignoregroupqr', 'Ignore Mapped Group',value = TRUE),
+            #       checkboxInput('hidedynamic', 'Hide Dynamic Quantile'),
+            #       conditionalPanel(
+            #         condition = "input.ignorecolqr" ,
+            #         selectInput('colqr', label ='QR Color', choices=colors(),multiple=FALSE, selectize=TRUE,selected="black")
+            #       ))
+            #     
+            #   )#fluidrow
+            # ),
+            # ---- regression ----
+            tabPanel(
+              "Smooth/Linear/Logistic Regressions (?)",
+              
+              fluidRow(
+                column(12,hr()),
+                column (
+                  3, 
+                  radioButtons("Smooth", "Smooth:",
+                               c("Smooth" = "Smooth",
+                                 "Smooth and SE" = "Smooth and SE",
+                                 "None" = "None"),selected="None")
+                ),
+                column (
+                  3, 
+                  conditionalPanel(
+                    " input.Smooth!= 'None' ",
+                    selectInput('smoothmethod', label ='Smoothing Method',
+                                choices=c("Loess" ="loess","Linear Fit"="lm","Logistic"="glm"),
+                                multiple=FALSE, selectize=TRUE,selected="loess"),
+                    
+                    sliderInput("loessens", "Loess Span:", min=0, max=1, value=c(0.75),step=0.05),
+                    selectInput('loessfamily', label ='Loess Family:',
+                                choices=c("Gaussian" ="gaussian","Symmetric"="symmetric"),
+                                multiple=FALSE, selectize=TRUE,selected="gaussian"),
+                    sliderInput("loessdegree", "Loess Degree:", min=0, max=2, value=c(1),step=1)
+                    
+                  ) 
+                ),
+                
+                column (
+                  3,  conditionalPanel( " input.Smooth!= 'None' ",
+                                        checkboxInput('ignorecol', 'Ignore Mapped Color'),
+                                        conditionalPanel(
+                                          " input.ignorecol ",
+                                          selectInput('colsmooth', label ='Smooth Color', choices=colors(),
+                                                      multiple=FALSE, selectize=TRUE,selected="black") )
+                                        
+                  )
+                ),
+                column (
+                  3, conditionalPanel(
+                    " input.Smooth!= 'None' ",
+                    checkboxInput('ignoregroup', 'Ignore Mapped Group',value = TRUE)
+                  ) ,
+                  uiOutput("weight"))
+                
+              )#fluidrow
+            ),
+            # # ---- Mean CI section ----
+            # tabPanel(
+            #   "Mean CI (?)",
+            #   
+            #   fluidRow(
+            #     column(12,hr()),
+            #     column (3, 
+            #             radioButtons("Mean", "Mean:",
+            #                          c("Mean" = "Mean",
+            #                            "Mean/CI" = "Mean/CI",
+            #                            "None" = "None") ,selected="None") 
+            #     ),
+            #     column (
+            #       3,
+            #       
+            #       conditionalPanel(
+            #         " input.Mean== 'Mean/CI' ",
+            #         sliderInput("CI", "CI %:", min=0, max=1, value=c(0.95),step=0.01),
+            #         numericInput( inputId = "errbar",label = "CI bar width:",value = 2,min = 1,max = NA)      
+            #       )
+            #       
+            #     ),
+            #     column (
+            #       3,
+            #       conditionalPanel(
+            #         " input.Mean!= 'None' ",
+            #         checkboxInput('meanpoints', 'Show points') ,
+            #         checkboxInput('meanlines', 'Show lines', value=TRUE),
+            #         checkboxInput('meanignorecol', 'Ignore Mapped Color') ,
+            #         conditionalPanel( " input.meanignorecol ",
+            #                           selectInput('colmean', label ='Mean Color', choices=colors(),multiple=FALSE, selectize=TRUE,selected="black") )
+            #         
+            #       ) ),
+            #     
+            #     
+            #     column(
+            #       3,
+            #       conditionalPanel(
+            #         " input.Mean!= 'None' ",
+            #         checkboxInput('meanignoregroup', 'Ignore Mapped Group',value = TRUE),
+            #         sliderInput("meanlinesize", "Mean(s) Line(s) Size:", min=0, max=3, value=1,step=0.05)
+            #       ) 
+            #     )
+            #   ) #fluidrow
+            # ), # tab panel for mean
+            # 
+            # # ---- median PI section ----
+            # 
+            # 
+            # tabPanel(
+            #   "Median PIs (?)",
+            #   
+            #   fluidRow(
+            #     column(12,hr()),
+            #     column (
+            #       3,
+            #       radioButtons("Median", "Median:",
+            #                    c("Median" = "Median",
+            #                      "Median/PI" = "Median/PI",
+            #                      "None" = "None") ,selected="None") ,
+            #       conditionalPanel( " input.Median!= 'None' ",
+            #                         checkboxInput('medianvalues', 'Label Values?') ,
+            #                         checkboxInput('medianN', 'Label N?') )
+            #       
+            #     ),
+            #     column (
+            #       3,
+            #       conditionalPanel( " input.Median== 'Median' ",
+            #                         checkboxInput('medianpoints', 'Show points') ,
+            #                         checkboxInput('medianlines', 'Show lines',value=TRUE)),
+            #       conditionalPanel( " input.Median== 'Median/PI' ",
+            #                         sliderInput("PI", "PI %:", min=0, max=1, value=c(0.95),step=0.01),
+            #                         sliderInput("PItransparency", "PI Transparency:", min=0, max=1, value=c(0.2),step=0.01)
+            #       )
+            #     ),
+            #     column (
+            #       3,
+            #       conditionalPanel( " input.Median!= 'None' ",
+            #                         checkboxInput('medianignorecol', 'Ignore Mapped Color'),
+            #                         conditionalPanel(
+            #                           " input.medianignorecol ",
+            #                           selectInput('colmedian', label ='Median Color', choices=colors(),multiple=FALSE, selectize=TRUE,selected="black") )
+            #                         
+            #       ) ),
+            #     column (
+            #       3,
+            #       conditionalPanel(
+            #         " input.Median!= 'None' ",
+            #         
+            #         checkboxInput('medianignoregroup', 'Ignore Mapped Group',value = TRUE),
+            #         sliderInput("medianlinesize", "Median(s) Line(s) Size:", min=0, max=4, value=c(1),step=0.1)
+            #         
+            #       )
+            #     )
+            #     
+            #   )#fluidrow
+            # ),
+            # # ---- median PI section ----
+            # 
+            # # ---- KM section ----
+            # 
+            # 
+            # tabPanel(
+            #   "Kaplan-Meier (?)",
+            #   
+            #   fluidRow(
+            #     column(12,hr()),
+            #     column (12, h6("KM curves support is currently experimental some features might not work. When a KM curve is added nothing else will be plotted (e.g. points, lines etc.).Color/Fill/Group/Facets are expected to work." )),
+            #     column (
+            #       3,
+            #       radioButtons("KM", "KM:",
+            #                    c("KM" = "KM",
+            #                      "KM/CI" = "KM/CI",
+            #                      "None" = "None") ,selected="None") 
+            #     ),
+            #     column (
+            #       3,
+            #       conditionalPanel(
+            #         " input.KM== 'KM/CI' ",
+            #         sliderInput("KMCI", "KM CI:", min=0, max=1, value=c(0.95),step=0.01),
+            #         sliderInput("KMCItransparency", "KM CI Transparency:", min=0, max=1, value=c(0.2),step=0.01)
+            #         
+            #       )),
+            #     
+            #     column (
+            #       3,
+            #       conditionalPanel(
+            #         " input.KM!= 'None' ",
+            #         selectInput('KMtrans', label ='KM Transformation',
+            #                     choices=c("None" ="identity","event"="event",
+            #                               "cumhaz"="cumhaz","cloglog"="cloglog"),
+            #                     multiple=FALSE, selectize=TRUE,selected="identity"),
+            #         checkboxInput('censoringticks', 'Show Censoring Ticks?') 
+            #       )
+            #     )
+            #   )#fluidrow
+            # ), #tabpanel km
+            # ---- Correlation section ----
+            tabPanel(
+              "Correlation Coefficient (?)",
+              fluidRow(
+                column(12,hr()),
+                checkboxInput('addcorrcoeff',"Add Correlation Coefficient to the plot ?"),
+                checkboxInput('addcorrcoeffignoregroup',"Ignore Mapped Group ?", value=TRUE)
+                
+                
+              )#fluidrow
+            )##tabpanel corr
+            )#tabsetPanel Types of Graphs
+          ),#tabPanel Types of graphs
         #### How to ------------------
-      tabPanel(
-        "How To",
-        includeMarkdown(file.path("text", "howto.md"))
+        tabPanel(
+          "How To",
+          includeMarkdown(file.path("text", "howto.md"))
         )# tabpanel 
-      ) #tabsetPanel
+      #### END ----
+      )#tabsetPanel1
       ), #sidebarPanel
-    
     #### MAIN PANEL -----------------
     mainPanel(
       tabsetPanel(
@@ -610,169 +748,170 @@ fluidPage(
         tabPanel(
           "Scatter/Regression Plot", 
           tabsetPanel(
+            # ---- Plot ----
             tabPanel(
-            "Plot",
-          
-          uiOutput('ui_plot'),
-          selectInput("input_type", "Input type",
-                      c("ggplot","plotly")
-          ),
-          shinyjs::hidden(div(
-            id = "update_plot_area",
-            inline_ui(
-              checkboxInput("auto_update_plot",
-                            "Update plot automatically", value = TRUE)
-            ),
-            actionButton("update_plot_btn", "Update plot",
-                         icon = icon("refresh"))
-          )),
-          shinyjs::hidden(div(
-            id = "save_plot_area",
-            inline_ui(
-              textInput("save_plot_name", NULL, "",
-                        placeholder = "Enter plot name to save")
-            ),
-            actionButton("save_plot_btn", "Save plot", icon = icon("star")),
-            shinyjs::hidden(
-              span(
-                id = "save_plot_checkmark",
-                icon("check")
-                )
-              ) #shinyjs save_plot_checkmark
-            ) #shinyjs save_plot_area div
-            ) #shinyjs save_plot_area hidden
-          ), #tabPanel Plot
-          
-          # ---- Regression Diagnostics ----
-          tabPanel(
-            "Diagnostics",
-            tabsetPanel(
-              tabPanel( "Studentized Residuals",
-                        fluidRow(
-                          column(6,
-                                 plotlyOutput("stdresd1")
-                          ), #column
-                          column(6,
-                                 plotlyOutput("stdresd2")
-                          ) #column
-                        ) #fluidRow
-              ), #tabpanel 
+              "Plot",
               
-              tabPanel( "Leverages",
-                        plotlyOutput("leverage")
+              uiOutput('ui_plot'),
+              selectInput("input_type", "Input type",
+                          c("ggplot","plotly")
               ),
-              
-              tabPanel( "Cook's Distance",
-                        plotlyOutput("cookd")
-              ),
-              
-              tabPanel( "DFBETAs &  DFFITSBETAs",
-                        fluidRow(
-                          column(6, h4("DFBETAs"),
-                                 wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
-                                           verbatimTextOutput("DFBETAs")
-                                 ) 
-                          ), #column
-                          
-                          column(6, h4("DFFITSBETAs"),
-                                 wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
-                                           verbatimTextOutput("DFFITSBETAs")
-                                 )
-                          ) #column
-                        ) #fluidRow
-              ), #tabpanel 
-              
-              tabPanel("Multicollinearity",
-                       fluidRow(
-                         column(6, h4("VIF"),
-                                verbatimTextOutput("VIF")
-                         ), #column
-                         
-                         column(6, h4("Tolerance"),
-                                verbatimTextOutput("tolerance")
-                         ) #column
-                       ) #fluidRow
-              ), #tabpanel 
-              
-              tabPanel("Diagnostic Summary",
-                       fluidRow(
-                         column(8,
-                                h3("PIDNs who failed the diagnostics"),
-                                wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
-                                          verbatimTextOutput("diag.reg")
-                                ) #wellpanel
-                         ) #column
-                       ) #fluidRow
-              ) #tabPanel Diagnostic Summary
-            )#tabsetPanel
+              shinyjs::hidden(div(
+                id = "update_plot_area",
+                inline_ui(
+                  checkboxInput("auto_update_plot",
+                                "Update plot automatically", value = TRUE)
+                ),
+                actionButton("update_plot_btn", "Update plot",
+                             icon = icon("refresh"))
+              )),
+              shinyjs::hidden(div(
+                id = "save_plot_area",
+                inline_ui(
+                  textInput("save_plot_name", NULL, "",
+                            placeholder = "Enter plot name to save")
+                ),
+                actionButton("save_plot_btn", "Save plot", icon = icon("star")),
+                shinyjs::hidden(
+                  span(
+                    id = "save_plot_checkmark",
+                    icon("check")
+                  )
+                ) #shinyjs save_plot_checkmark
+              ) #shinyjs save_plot_area div
+              ) #shinyjs save_plot_area hidden
+            ), #tabPanel Plot
+            
+            # ---- Regression Diagnostics ----
+            tabPanel(
+              "Diagnostics",
+              tabsetPanel(
+                tabPanel( "Studentized Residuals",
+                          fluidRow(
+                            column(6,
+                                   plotlyOutput("stdresd1")
+                            ), #column
+                            column(6,
+                                   plotlyOutput("stdresd2")
+                            ) #column
+                          ) #fluidRow
+                ), #tabpanel 
+                
+                tabPanel( "Leverages",
+                          plotlyOutput("leverage")
+                ),
+                
+                tabPanel( "Cook's Distance",
+                          plotlyOutput("cookd")
+                ),
+                
+                tabPanel( "DFBETAs &  DFFITSBETAs",
+                          fluidRow(
+                            column(6, h4("DFBETAs"),
+                                   wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
+                                             verbatimTextOutput("DFBETAs")
+                                   ) 
+                            ), #column
+                            
+                            column(6, h4("DFFITSBETAs"),
+                                   wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
+                                             verbatimTextOutput("DFFITSBETAs")
+                                   )
+                            ) #column
+                          ) #fluidRow
+                ), #tabpanel 
+                
+                tabPanel("Multicollinearity",
+                         fluidRow(
+                           column(6, h4("VIF"),
+                                  verbatimTextOutput("VIF")
+                           ), #column
+                           
+                           column(6, h4("Tolerance"),
+                                  verbatimTextOutput("tolerance")
+                           ) #column
+                         ) #fluidRow
+                ), #tabpanel 
+                
+                tabPanel("Diagnostic Summary",
+                         fluidRow(
+                           column(8,
+                                  h3("PIDNs who failed the diagnostics"),
+                                  wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
+                                            verbatimTextOutput("diag.reg")
+                                  ) #wellpanel
+                           ) #column
+                         ) #fluidRow
+                ) #tabPanel Diagnostic Summary
+              )#tabsetPanel
             ), #tabPanel Diagnostics
-          
-          # ---- Regression summary ----
-          tabPanel(
-            "Regression Summary",
-            fluidRow(
-              column(6,
-                     h4("Covariates summary"),
-                     wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
-                               verbatimTextOutput("covariate.fit.beta")
-                               ),#wellpanel
-                     h4("Model change summary"),
-                     wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
-                               verbatimTextOutput("anova.model")
-                               )#wellpanel
-                     ), #column
-              column(6, 
-                     h4("Regression summary"),
-                               # uiOutput("fit.beta"),
-                     wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
-                               verbatimTextOutput("fit.beta")
-                     ),#wellpanel
-                     h4("Regression Effect Size"),
-                     wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
-                               verbatimTextOutput("Regression_Effect_Size")
-                               )#wellpanel
-                     )#column
+            
+            # ---- Regression summary ----
+            tabPanel(
+              "Regression Summary",
+              fluidRow(
+                column(6,
+                       h4("Covariates summary"),
+                       wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
+                                 verbatimTextOutput("covariate.fit.beta")
+                       ),#wellpanel
+                       h4("Model change summary"),
+                       wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
+                                 verbatimTextOutput("anova.model")
+                       )#wellpanel
+                ), #column
+                column(6, 
+                       h4("Regression summary"),
+                       # uiOutput("fit.beta"),
+                       wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
+                                 verbatimTextOutput("fit.beta")
+                       ),#wellpanel
+                       h4("Regression Effect Size"),
+                       wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
+                                 verbatimTextOutput("Regression_Effect_Size")
+                       )#wellpanel
+                )#column
               ) #fluidrow
-          ) #tabPanel Regression Summary
+            ) #tabPanel Regression Summary
           ) #tabsetPanel
         ),#tabPanel
         
-        # #### Histogram/Bar tabpanel -------------
-        tabPanel(
-          "Histogram/Box/Bar Chart"  ,
-          uiOutput('ui_plot_hist'),
-          shinyjs::hidden(div(
-            id = "update_plot_area",
-            inline_ui(
-              checkboxInput("auto_update_plot",
-                            "Update plot automatically", value = TRUE)
-            ),
-            actionButton("update_plot_btn", "Update plot",
-                         icon = icon("refresh"))
-          )),
-          shinyjs::hidden(div(
-            id = "save_plot_area",
-            inline_ui(
-              textInput("save_plot_name", NULL, "",
-                        placeholder = "Enter plot name to save")
-            ),
-            actionButton("save_plot_btn", "Save plot", icon = icon("star")),
-            shinyjs::hidden(
-              span(
-                id = "save_plot_checkmark",
-                icon("check")
-              )
-            )
-          ))
-        ),#tabPanel1
-
+        # #### Bar Chart tabpanel -------------
+        # tabPanel(
+        #   "Histogram/Box/Bar Chart"  ,
+        #   uiOutput('ui_plot_hist'),
+        #   shinyjs::hidden(div(
+        #     id = "update_plot_area",
+        #     inline_ui(
+        #       checkboxInput("auto_update_plot",
+        #                     "Update plot automatically", value = TRUE)
+        #     ),
+        #     actionButton("update_plot_btn", "Update plot",
+        #                  icon = icon("refresh"))
+        #   )),
+        #   shinyjs::hidden(div(
+        #     id = "save_plot_area",
+        #     inline_ui(
+        #       textInput("save_plot_name", NULL, "",
+        #                 placeholder = "Enter plot name to save")
+        #     ),
+        #     actionButton("save_plot_btn", "Save plot", icon = icon("star")),
+        #     shinyjs::hidden(
+        #       span(
+        #         id = "save_plot_checkmark",
+        #         icon("check")
+        #       )
+        #     )
+        #   ))
+        # ),#tabPanel1
+        # 
         #### Export plots ---------------------
         tabPanel(
           "Export Plots", 
           conditionalPanel(
             condition = "!output.saved_plots_exist",
             h2("You do not have any saved plots to export")
-            ), #conditionalPanel
+          ), #conditionalPanel
           conditionalPanel(
             condition = "output.saved_plots_exist",
             fluidRow(
@@ -789,22 +928,22 @@ fluidPage(
                                 c("Portrait (8.5\" x 11\")" = "portrait",
                                   "Landscape (11\" x 8.5\")" = "landscape",
                                   "Custom dimensions" = "custom")
-                                ), #selectInput
+                    ), #selectInput
                     conditionalPanel(
                       condition = "input.export_pdf_orientation == 'custom'",
                       numericInput("export_pdf_width", "Page width (inches)",
                                    value = 8.5, min = 1, max = 50, step = 0.5),
                       numericInput("export_pdf_height", "Page height (inches)",
                                    value = 11, min = 1, max = 50, step = 0.5)
-                      ) #conditionalPanel
-                    ), #conditionalPanel
+                    ) #conditionalPanel
+                  ), #conditionalPanel
                   conditionalPanel(
                     condition = "input.export_file_type != 'pdf'",
                     numericInput("export_file_width", "Image width (pixels)",
                                  value = 480, min = 100, max = 2000),
                     numericInput("export_file_height", "Image height (pixels)",
                                  value = 480, min = 100, max = 2000)
-                    ), #conditionalPanel
+                  ), #conditionalPanel
                   checkboxInput("export_multiple", "Multiple plots per page"),
                   conditionalPanel(
                     condition = "input.export_multiple",
@@ -815,9 +954,9 @@ fluidPage(
                                  value = 1, min = 1, max = 20),
                     numericInput("export_ncol", "Columns per page",
                                  value = 1, min = 1, max = 20)
-                    ),#conditionalPanel
+                  ),#conditionalPanel
                   uiOutput("export_btn_ui")
-                  ) #div
+                ) #div
               ), #column
               column(
                 8,
@@ -830,7 +969,7 @@ fluidPage(
                   id = "preview_plots_options",
                   uiOutput("plots_select_page_ui"),
                   plotOutput("plot_preview", height = "auto")
-                  )
+                )
               ) #column
             ) #fluidRow
           ) #conditionalPanel
@@ -842,52 +981,60 @@ fluidPage(
                  p("Note: use y for variables of interest (rows) and x for stratification (columns). Drag and Drop the y variable(s) list on the left to the order of your liking"),
                  htmlOutput("dstats"),
                  shinyjs::hidden(div(
-                     id = "table_options_area",
-                     inline_ui(
-                         checkboxInput("auto_update_table",
-                                       "Update table automatically", value = TRUE)
-                         ),
-                     actionButton("update_table_btn", "Update table",
-                                  icon = icon("refresh")),
-                     fluidRow(
-                       column(3,
-                         div(id="quick_relabel_placeholder"),
-                         uiOutput("dstats_col_extra"),
-                         uiOutput("filpthelevels")
-                       ),
-                       column(3,
-                              div(id="quick_reorder_placeholder")
-                       ),
-                       column(6,
-                         checkboxInput("table_incl_overall",
-                                       label="Include Overall column?",
-                                       value=TRUE),
-                         selectInput("table_style",
-                           label="Style",
-                           choices=c("Default"="t1default",
-                                     "Zebra"="t1zebra",
-                                     "Grid"="t1grid")),
-                         selectizeInput("dstats_cont_list",
-                           label="Statistics to display for continuous variables (per line)",
-                           choices=allstats,
-                           selected=c("Mean (SD)", "Median [Min, Max]"),
-                           multiple=TRUE,
-                           options=list(plugins=list('drag_drop','remove_button'))),
-                         numericInput("dstats_sigfig",
-                           label="Number of significant figures (for Mean, SD, ...)",
-                           value=3, min=1, max=10, step=1),
-                         checkboxInput("round_median_min_max",
-                                       label="Also round median, min, max?",
-                                       value=TRUE)
-                         )
-                       ) #fluidrow
-                     )) #shinyjs
-                 ), #tabpanel descriptive stats
+                   id = "table_options_area",
+                   inline_ui(
+                     checkboxInput("auto_update_table",
+                                   "Update table automatically", value = TRUE)
+                   ),
+                   actionButton("update_table_btn", "Update table",
+                                icon = icon("refresh")),
+                   fluidRow(
+                     column(3,
+                            div(id="quick_relabel_placeholder"),
+                            uiOutput("dstats_col_extra"),
+                            uiOutput("filpthelevels")
+                     ),
+                     column(3,
+                            div(id="quick_reorder_placeholder")
+                     ),
+                     column(6,
+                            checkboxInput("table_incl_overall",
+                                          label="Include Overall column?",
+                                          value=TRUE),
+                            selectInput("table_style",
+                                        label="Style",
+                                        choices=c("Default"="t1default",
+                                                  "Zebra"="t1zebra",
+                                                  "Grid"="t1grid")),
+                            selectizeInput("dstats_cont_list",
+                                           label="Statistics to display for continuous variables (per line)",
+                                           choices=allstats,
+                                           selected=c("Mean (SD)", "Median [Min, Max]"),
+                                           multiple=TRUE,
+                                           options=list(plugins=list('drag_drop','remove_button'))),
+                            numericInput("dstats_sigfig",
+                                         label="Number of significant figures (for Mean, SD, ...)",
+                                         value=3, min=1, max=10, step=1),
+                            checkboxInput("round_median_min_max",
+                                          label="Also round median, min, max?",
+                                          value=TRUE)
+                     )
+                   ) #fluidrow
+                 )) #shinyjs
+        ), #tabpanel descriptive stats
         
-        #### Test tab -----------------
-        tabPanel("Test Tab",
-                 dataTableOutput("mytabletest")
-                 ), #tabPanel Test tab
+        # #### Test tab -----------------
+        # tabPanel("Test Tab",
+        #          dataTableOutput("mytabletest")
+        # ), #tabPanel Test tab
+        # 
+        #### Get Plot Code tab ----
+        tabPanel(
+          'Plot Code',
+          h5("Plot reproducibility initial support. To reproduce a plot, in the data tab save the plotdata into a csv, read back to R naming it plotdata then copy paste the code below. Some inputs might not be yet supported we will be adding those during the coming weeks."),
+          verbatimTextOutput("plotcode")
+        ), #tabpanel Plotcode
+        
         #### E-Mail tab -----------------
         tabPanel("E-mail",
                  mainPanel(
@@ -901,11 +1048,11 @@ fluidPage(
                    renderUI({
                      if(is.null(sendmymail())) return(NULL)
                      validate(need(is.null(sendmymail()$msg), 'Email Sent'))
-                     })
-                   ) #mainPanel
-                 ) #tabPanel E-mail
+                   })
+                 ) #mainPanel
+        ) #tabPanel E-mail
         #### END -------------------
-        )#tabsetPanel
-      )#mainPanel
-    )#sidebarLayout
-  )#fluidPage
+      )#tabsetPanel
+    )#mainPanel
+  )#sidebarLayout
+)#fluidPage

@@ -103,10 +103,9 @@ function(input, output, session) {
   
   # Load sample dataset
   observeEvent(input$sample_data_btn, {
-    file <- "data/dashboardtest.csv"
+    file <- "data/sample_data.csv"
     values$maindata <- read.csv(file, na.strings = c("NA","."))
   })
-
   
   # when recodedata3 changes, reset the dynamic "change factor levels" boxes
   observeEvent(recodedata3(), {
@@ -124,18 +123,63 @@ function(input, output, session) {
   observeEvent(input$factor_lvl_change_add, {
     add_factor_lvl_change_box()
   })
-  #### INPUT ####
-  # ------ Filter data ----
+  
+  # X/Y Axes ----
+  output$xcol <- renderUI({
+    df <-values$maindata
+    if (is.null(df)) return(NULL)
+    items=names(df)
+    names(items)=items
+    selectizeInput("x", "x variable:",choices = items,
+                   options = list(
+                     onInitialize = I('function() { this.setValue(""); }')
+                   ) #options
+    )
+    
+  })
+  output$ycol <- renderUI({
+    df <- values$maindata
+    if (is.null(df)) return(NULL)
+    items=names(df)
+    names(items)=items
+    selectizeInput("y", "y variable(s):",choices=items,multiple=TRUE,
+                   options = list(
+                     plugins = list('remove_button', 'drag_drop'),
+                     onInitialize = I('function() { this.setValue(""); }')
+                   ) #list
+    ) #options
+  })
+  output$scatter_covar <-  renderUI({
+    df <- values$maindata
+    if (is.null(df)) return(NULL)
+    items=names(df)
+    selectInput('scatter_covar', 'Add covariates (optional)', choices = items, 
+                selectize = TRUE, multiple = TRUE)
+  })
+  
+  # If an X is selected but no Y is selected, switch to the Histograms tab
+  observe({
+    if (!is.null(input$x) && is.null(input$y)) {
+      updateTabsetPanel(session, "graphicaltypes", "histograms_density")
+    }
+  })
+  
+  outputOptions(output, "ycol", suspendWhenHidden=FALSE)
+  outputOptions(output, "xcol", suspendWhenHidden=FALSE)
+  outputOptions(output, "scatter_covar", suspendWhenHidden=FALSE)
+  
+  # Filter ----
   output$maxlevels <- renderUI({
-    df <-recodedata4()
+    df <-pastedata()
     validate(       need(!is.null(df), "Please select a data set"))
     #if (is.null(df)) return(NULL)
     numericInput( inputId = "inmaxlevels",label = "Maximum number of unique values for Filter variable (1),(2),(3) (this is to avoid performance issues):",value = 500,min = 1,max = NA)
     
   })
   outputOptions(output, "maxlevels", suspendWhenHidden=FALSE)
+  
   output$filtervar1 <- renderUI({
-    df <-recodedata4()
+    df <-pastedata()
     validate(       need(!is.null(df), "Please select a data set"))
     #if (is.null(df)) return(NULL)
     NUNIQUEDF <- sapply(df, function(x) length(unique(x)))
@@ -143,7 +187,7 @@ function(input, output, session) {
     selectInput("infiltervar1" , "Filter variable (1):",c('None',NAMESTOKEEP ) )
   })
   output$filtervar2 <- renderUI({
-    df <- recodedata4()
+    df <- pastedata()
     validate(       need(!is.null(df), "Please select a data set"))
     #if (is.null(df)) return(NULL)
     NUNIQUEDF <- sapply(df, function(x) length(unique(x)))
@@ -152,7 +196,7 @@ function(input, output, session) {
     selectInput("infiltervar2" , "Filter variable (2):",c('None',NAMESTOKEEP ) )
   })
   output$filtervar3 <- renderUI({
-    df <- recodedata4()
+    df <- pastedata()
     validate(       need(!is.null(df), "Please select a data set"))
     #if (is.null(df)) return(NULL)
     NUNIQUEDF <- sapply(df, function(x) length(unique(x)))
@@ -163,7 +207,7 @@ function(input, output, session) {
   })
   
   output$filtervarcont1 <- renderUI({
-    df <-recodedata4()
+    df <-pastedata()
     validate(       need(!is.null(df), "Please select a data set"))
     #if (is.null(df)) return(NULL)
     NUNIQUEDF <- sapply(df, function(x) length(unique(x)))
@@ -172,7 +216,7 @@ function(input, output, session) {
     selectInput("infiltervarcont1" , "Filter continuous (1):",c('None',NAMESTOKEEP ) )
   })
   output$filtervarcont2 <- renderUI({
-    df <-recodedata4()
+    df <-pastedata()
     validate(       need(!is.null(df), "Please select a data set"))
     #if (is.null(df)) return(NULL)
     NUNIQUEDF <- sapply(df, function(x) length(unique(x)))
@@ -181,7 +225,7 @@ function(input, output, session) {
     selectInput("infiltervarcont2" , "Filter continuous (2):",c('None',NAMESTOKEEP ) )
   })
   output$filtervarcont3 <- renderUI({
-    df <-recodedata4()
+    df <-pastedata()
     validate(       need(!is.null(df), "Please select a data set"))
     #if (is.null(df)) return(NULL)
     NUNIQUEDF <- sapply(df, function(x) length(unique(x)))
@@ -189,8 +233,9 @@ function(input, output, session) {
     NAMESTOKEEP<- NAMESTOKEEP[ is.element ( NAMESTOKEEP,names(df[sapply(df,is.numeric)]))]
     selectInput("infiltervarcont3" , "Filter continuous (3):",c('None',NAMESTOKEEP ) )
   })
+  
   output$filtervar1values <- renderUI({
-    df <-recodedata4()
+    df <-pastedata()
     validate(       need(!is.null(df), "Please select a data set"))
     #if (is.null(df)) return(NULL)
     if(is.null(input$infiltervar1) || input$infiltervar1=="None") {return(NULL)}
@@ -205,7 +250,7 @@ function(input, output, session) {
   }) 
   
   filterdata  <- reactive({
-    df <-   recodedata4()
+    df <-   pastedata()
     validate(       need(!is.null(df), "Please select a data set"))
     #if (is.null(df)) return(NULL)
     if(is.null(input$infiltervar1)) {
@@ -218,6 +263,7 @@ function(input, output, session) {
     
     df
   })
+  
   output$filtervar2values <- renderUI({
     df <- filterdata()
     validate(       need(!is.null(df), "Please select a data set"))
@@ -389,26 +435,22 @@ function(input, output, session) {
   outputOptions(output, "fslider1", suspendWhenHidden=FALSE)
   outputOptions(output, "fslider2", suspendWhenHidden=FALSE)
   outputOptions(output, "fslider3", suspendWhenHidden=FALSE)
-  
-  # ------ Categorize/Recode tab ####
-  
-  # output$catvar <- renderUI({
-  #   df <-values$maindata
-  #   validate(       need(!is.null(df), "Please select a data set"))
-  #   items=names(df)
-  #   names(items)=items
-  #   MODEDF <- sapply(df, function(x) is.numeric(x))
-  #   NAMESTOKEEP2<- names(df)  [ MODEDF ]
-  #   selectInput('catvarin',label = 'Recode into Binned Categories:',choices=NAMESTOKEEP2,multiple=TRUE)
-  # })
-  # 
-  # 
-  # output$ncuts <- renderUI({
-  #   if (is.null(input$catvarin))  return(NULL)
-  #   if (!is.null(input$catvarin) && length(input$catvarin ) <1)  return(NULL)
-  #   sliderInput('ncutsin',label = 'N of Cut Breaks:', min=2, max=10, value=c(2),step=1)
-  # })
-  
+
+  # Categorize ----
+  output$catvar <- renderUI({
+    df <-values$maindata
+    validate(       need(!is.null(df), "Please select a data set"))
+    items=names(df)
+    names(items)=items
+    MODEDF <- sapply(df, function(x) is.numeric(x))
+    NAMESTOKEEP2<- names(df)  [ MODEDF ]
+    selectInput('catvarin',label = 'Recode into Binned Categories:',choices=NAMESTOKEEP2,multiple=TRUE)
+  })
+  output$ncuts <- renderUI({
+    if (is.null(input$catvarin))  return(NULL)
+    if (!is.null(input$catvarin) && length(input$catvarin ) <1)  return(NULL)
+    sliderInput('ncutsin',label = 'N of Cut Breaks:', min=2, max=10, value=c(2),step=1)
+  })
   output$catvar2 <- renderUI({
     df <-values$maindata
     validate(       need(!is.null(df), "Please select a data set"))
@@ -424,7 +466,6 @@ function(input, output, session) {
     selectInput('catvar2in',label = 'Treat as Categories:',choices=NAMESTOKEEP2,multiple=TRUE)
     
   })
-  
   output$catvar3 <- renderUI({
     df <-values$maindata
     validate(       need(!is.null(df), "Please select a data set"))
@@ -473,16 +514,12 @@ function(input, output, session) {
     }
   })
   
-  
-  # outputOptions(output, "catvar", suspendWhenHidden=FALSE)
-  # outputOptions(output, "ncuts", suspendWhenHidden=FALSE)
+  outputOptions(output, "catvar", suspendWhenHidden=FALSE)
+  outputOptions(output, "ncuts", suspendWhenHidden=FALSE)
   outputOptions(output, "catvar2", suspendWhenHidden=FALSE)
   outputOptions(output, "catvar3", suspendWhenHidden=FALSE)
   outputOptions(output, "ncuts2", suspendWhenHidden=FALSE)
   outputOptions(output, "asnumeric", suspendWhenHidden=FALSE)
-  
-  
-  
   
   recodedata1  <- reactive({
     df <- values$maindata 
@@ -543,8 +580,7 @@ function(input, output, session) {
         bintextout <- paste( sort(unique(as.numeric(as.factor(df[,varname]) ) -1))  ,levels(df[,"custombins"] ),sep="/") 
       }}
     bintextout   
-  })   
-  
+  })
   recodedata4  <- reactive({
     df <- recodedata3()
     if (is.null(df)) return()
@@ -561,80 +597,110 @@ function(input, output, session) {
     }
     df
   })
+  output$pastevar <- renderUI({
+    df <- recodedata4()
+    validate(       need(!is.null(df), "Please select a data set"))
+    #if (is.null(df)) return(NULL)
+    items=names(df)
+    names(items)=items
+    MODEDF <- sapply(df, function(x) is.numeric(x))
+    yvariables <- input$y
+    NAMESTOKEEP2<- names(df)  [! MODEDF ]
+    NAMESTOKEEP2<- NAMESTOKEEP2[!NAMESTOKEEP2 %in% yvariables]
+    selectizeInput("pastevarin", "Combine the categories of these two variables:", choices = NAMESTOKEEP2,multiple=TRUE,
+                   options = list(
+                     maxItems = 2 ,
+                     placeholder = 'Please select two variables',
+                     onInitialize = I('function() { this.setValue(""); }'),
+                     plugins = list('remove_button', 'drag_drop')
+                   )
+    )
+  })
+  pastedata  <- reactive({
+    df <- recodedata4()
+    if (is.null(df)) return()
+    if( !is.null(input$pastevarin)   ) {
+      if (length(input$pastevarin) > 1) {
+        df <- df %>%
+          unite_(paste(as.character(input$pastevarin),collapse="_",sep="") ,
+                 c(input$pastevarin[1], input$pastevarin[2] ),remove=FALSE)
+        
+      }
+    }
+    df
+  })
+
+  outputOptions(output, "pastevar", suspendWhenHidden=FALSE)
+  outputOptions(output, "bintext", suspendWhenHidden=FALSE)
   
-  # output$pastevar <- renderUI({
-  #   df <- recodedata4()
-  #   validate(       need(!is.null(df), "Please select a data set"))
-  #   #if (is.null(df)) return(NULL)
-  #   items=names(df)
-  #   names(items)=items
-  #   MODEDF <- sapply(df, function(x) is.numeric(x))
-  #   yvariables <- input$y
-  #   NAMESTOKEEP2<- names(df)  [! MODEDF ]
-  #   NAMESTOKEEP2<- NAMESTOKEEP2[!NAMESTOKEEP2 %in% yvariables]
-  #   selectizeInput("pastevarin", "Combine the categories of these two variables:", choices = NAMESTOKEEP2,multiple=TRUE,
-  #                  options = list(
-  #                    maxItems = 2 ,
-  #                    placeholder = 'Please select two variables',
-  #                    onInitialize = I('function() { this.setValue(""); }'),
-  #                    plugins = list('remove_button', 'drag_drop')
-  #                  )
-  #   )
-  # })
-  # pastedata  <- reactive({
-  #   df <- recodedata4()
-  #   if (is.null(df)) return()
-  #   if( !is.null(input$pastevarin)   ) {
-  #     if (length(input$pastevarin) > 1) {
-  #       df <- df %>%
-  #         unite_(paste(as.character(input$pastevarin),collapse="_",sep="") ,
-  #                c(input$pastevarin[1], input$pastevarin[2] ),remove=FALSE)
-  #       
-  #     }
-  #   }
-  #   df
-  # })
-  # 
-  # outputOptions(output, "pastevar", suspendWhenHidden=FALSE)
-  # outputOptions(output, "bintext", suspendWhenHidden=FALSE)
+  # Rounddata ----
+  output$roundvar <- renderUI({
+    df <- filterdata6()
+    validate(       need(!is.null(df), "Please select a data set"))
+    #if (is.null(df)) return(NULL)
+    if (!is.null(df)){
+      items=names(df)
+      names(items)=items
+      MODEDF <- sapply(df, function(x) is.numeric(x))
+      NAMESTOKEEP2<- names(df)  [MODEDF]
+      selectizeInput(  "roundvarin", "Round the Values to the Specified N Digits:", choices = NAMESTOKEEP2,multiple=TRUE,
+                       options = list(
+                         placeholder = 'Please select some variables',
+                         onInitialize = I('function() { this.setValue(""); }')
+                       )
+      )
+    }
+  })
+  rounddata <- reactive({
+    df <- filterdata6()
+    validate(       need(!is.null(df), "Please select a data set"))
+    #if (is.null(df)) return(NULL)
+    if(!is.null(input$roundvarin)&length(input$roundvarin ) >=1) {
+      for (i in 1:length(input$roundvarin ) ) {
+        varname<- input$roundvarin[i]
+        df[,varname]   <- round( df[,varname],input$rounddigits)
+      }
+    }
+    df
+  })  
+  # Reorder ----
   
-  # ------ Reorder tab ----
-  # output$reordervar <- renderUI({
-  #   df <- rounddata()
-  #   validate(       need(!is.null(df), "Please select a data set"))
-  #   #if (is.null(df)) return(NULL)
-  #   items=names(df)
-  #   names(items)=items
-  #   MODEDF <- sapply(df, function(x) is.numeric(x))
-  #   NAMESTOKEEP2<- names(df)  [ !MODEDF ]
-  #   selectizeInput(  "reordervarin", 'Reorder This Variable:',
-  #                    choices =NAMESTOKEEP2 ,multiple=FALSE,
-  #                    options = list(    placeholder = 'Please select a variable',
-  #                                       onInitialize = I('function() { this.setValue(""); }')
-  #                    )
-  #   )
-  # })
-  # output$variabletoorderby <- renderUI({
-  #   df <-rounddata()
-  #   validate(       need(!is.null(df), "Please select a data set"))
-  #   if (is.null(input$reordervarin)) return()
-  #   if (length(input$reordervarin ) <1)  return(NULL)
-  #   if ( input$reordervarin!=""){
-  #     yinputs <- input$y
-  #     items=names(df)
-  #     names(items)=items
-  #     MODEDF <- sapply(df, function(x) is.numeric(x))
-  #     NAMESTOKEEP2<- names(df)  [ MODEDF ]
-  #     selectInput('varreorderin',label = 'Of this Variable:', choices=NAMESTOKEEP2,multiple=FALSE,selected="yvalues")
-  #   }
-  # })
+  output$reordervar <- renderUI({
+    df <- rounddata()
+    validate(       need(!is.null(df), "Please select a data set"))
+    #if (is.null(df)) return(NULL)
+    items=names(df)
+    names(items)=items
+    MODEDF <- sapply(df, function(x) is.numeric(x))
+    NAMESTOKEEP2<- names(df)  [ !MODEDF ]
+    selectizeInput(  "reordervarin", 'Reorder This Variable:',
+                     choices =NAMESTOKEEP2 ,multiple=FALSE,
+                     options = list(    placeholder = 'Please select a variable',
+                                        onInitialize = I('function() { this.setValue(""); }')
+                     )
+    )
+  })
+  output$variabletoorderby <- renderUI({
+    df <-rounddata()
+    validate(       need(!is.null(df), "Please select a data set"))
+    if (is.null(input$reordervarin)) return()
+    if (length(input$reordervarin ) <1)  return(NULL)
+    if ( input$reordervarin!=""){
+      yinputs <- input$y
+      items=names(df)
+      names(items)=items
+      MODEDF <- sapply(df, function(x) is.numeric(x))
+      NAMESTOKEEP2<- names(df)  [ MODEDF ]
+      selectInput('varreorderin',label = 'Of this Variable:', choices=NAMESTOKEEP2,multiple=FALSE,selected="yvalues")
+    }
+  })
   
-  # outputOptions(output, "roundvar", suspendWhenHidden=FALSE)
-  # outputOptions(output, "reordervar", suspendWhenHidden=FALSE)
-  # outputOptions(output, "variabletoorderby", suspendWhenHidden=FALSE)
+  outputOptions(output, "roundvar", suspendWhenHidden=FALSE)
+  outputOptions(output, "reordervar", suspendWhenHidden=FALSE)
+  outputOptions(output, "variabletoorderby", suspendWhenHidden=FALSE)
   
   reorderdata <- reactive({
-    df <- filterdata6()
+    df <- rounddata()
     validate(       need(!is.null(df), "Please select a data set"))
     if (is.null(input$reordervarin)) {
       return(df)
@@ -660,10 +726,9 @@ function(input, output, session) {
       }
     }
     df
-  }) 
-  
+  })  
   output$reordervar2 <- renderUI({
-    df <- filterdata6()
+    df <- reorderdata()
     validate(       need(!is.null(df), "Please select a data set"))
     #if (is.null(df)) return(NULL)
     MODEDF <- sapply(df, function(x) is.numeric(x))
@@ -674,8 +739,9 @@ function(input, output, session) {
     }
     selectInput("reordervar2in" , "Custom Reorder this variable:",c('None',NAMESTOKEEP ) )
   })
+  
   output$reordervar2values <- renderUI({
-    df <- filterdata6()
+    df <- reorderdata()
     validate(       need(!is.null(df), "Please select a data set"))
     if (is.null(input$reordervar2in)) return()
     if(input$reordervar2in=="None") {
@@ -712,234 +778,9 @@ function(input, output, session) {
     df
   })
   
-  output$catvar5 <- renderUI({
-    df <-reorderdata2()
-    validate(       need(!is.null(df), "Please select a data set"))
-    # if (is.null(df)) return(NULL)
-    items=names(df)
-    names(items)=items
-    MODEDF <- sapply(df, function(x) is.numeric(x))
-    NAMESTOKEEP2<- names(df)  [! MODEDF ]
-    
-    selectizeInput(  "catvar5in", 'Change levels of this variable:',
-                     choices =NAMESTOKEEP2 ,multiple=FALSE,
-                     options = list(    placeholder = 'Please select a variable',
-                                        onInitialize = I('function() { this.setValue(""); }')
-                     )
-    )
-  })
-  output$labeltext5 <- renderText({
-    df <- reorderdata2()
-    validate(       need(!is.null(df), "Please select a data set"))
-    if (is.null(input$catvar5in)) return("")
-    labeltext5out <- ""
-    if(input$catvar5in!="") {
-      varname<- input$catvar5in
-      labeltext5out <- c("Old labels",levels(as.factor(df[,varname]) ))
-    }
-    labeltext5out   
-  })   
-  output$nlabels5 <- renderUI({
-    df <-reorderdata2()
-    validate(       need(!is.null(df), "Please select a data set"))
-    if (is.null(input$catvar5in)) return()
-    if (length(input$catvar5in ) <1)  return(NULL)
-    if ( input$catvar5in!=""){
-      nlevels <- length( unique( levels(as.factor( df[,input$catvar5in] ))))
-      levelsvalues <- levels(as.factor( df[,input$catvar5in] ))
-      textInput("customvarlabels5", label =  paste(input$catvar5in,"requires",nlevels,"new labels,
-                                                   type in a comma separated list below"),
-                value =   paste(as.character(levelsvalues),collapse=", ",sep="")
-      )
-    }
-    
-  })
-  
-  outputOptions(output, "catvar5", suspendWhenHidden=FALSE)
-  outputOptions(output, "nlabels5", suspendWhenHidden=FALSE)
-  outputOptions(output, "labeltext5", suspendWhenHidden=FALSE)
-  
-  recodedata5  <- reactive({
-    df <- reorderdata2()
-    validate(       need(!is.null(df), "Please select a data set"))
-    if (is.null(input$catvar5in)) {
-      return(df)
-    }
-    if(input$catvar5in!="") {
-      varname<- input$catvar5in
-      xlabels <- input$customvarlabels5 
-      xlabels <- gsub("\\\\n", "\\\n", xlabels)
-      df[,varname] <- as.factor(df[,varname])
-      levels(df[,varname])  <-  unlist (strsplit(xlabels, ",") )
-    }
-    df
-  })
-  
-  
-  
-  # ------ gather for bar chart ----
-  stackdata <- reactive({
-    
-    df <- recodedata5() 
-    validate(       need(!is.null(df), "Please select a data set"))
-    #if (is.null(df)) return(NULL)
-    if (!is.null(df)){
-      validate(  need(!is.element(input$x,input$y) ,
-                      "Please select a different x variable or remove the x variable from the list of y variable(s)"))
-      
-    tidydata <- NULL
-      if(!is.null(input$y) ){
-        
-        validate(need(all(input$y %in% names(df)), "Invalid y value(s)"))
-        if(       all( sapply(df[,as.vector(input$y)], is.numeric)) )
-        {
-          tidydata <- df %>%
-            gather_( "yvars", "yvalues", gather_cols=as.vector(input$y) ) #%>%
-          # mutate(combinedvariable="Choose two variables to combine first")
-        } else {
-          tidydata <- df %>%
-            gather_( "yvars", "yvalues", gather_cols=as.vector(input$y) ) %>%
-            mutate(yvalues=as.factor(as.character(yvalues) ))#%>%
-          # mutate(combinedvariable="Choose two variables to combine first")
-        }
-      } else {
-        tidydata <- df
-        tidydata$yvars <- "None"
-        tidydata$yvalues <- NA
-      }
-      
-      tidydata
-    }
-  })
-
-  rounddata <- reactive({
-    
-    df <- stackdata() 
-  })
-  
-  finalplotdata <- reactive({
-    df <- rounddata()
-    as.data.frame(df)
-  })
-  
-  tabledata <- reactive({
-    df <- recodedata5()
-    as.data.frame(df)
-  })
-  
-  # output$roundvar <- renderUI({
-  #   df <- stackdata()
-  #   validate(       need(!is.null(df), "Please select a data set"))
-  #   #if (is.null(df)) return(NULL)
-  #   if (!is.null(df)){
-  #     items=names(df)
-  #     names(items)=items
-  #     MODEDF <- sapply(df, function(x) is.numeric(x))
-  #     NAMESTOKEEP2<- names(df)  [MODEDF]
-  #     selectizeInput(  "roundvarin", "Round the Values to the Specified N Digits:", choices = NAMESTOKEEP2,multiple=TRUE,
-  #                      options = list(
-  #                        placeholder = 'Please select some variables',
-  #                        onInitialize = I('function() { this.setValue(""); }')
-  #                      )
-  #     )
-  #   }
-  # }) 
-  
-  # rounddata <- reactive({
-  #   df <- stackdata()
-  #   validate(       need(!is.null(df), "Please select a data set"))
-  #   #if (is.null(df)) return(NULL)
-  #   if(!is.null(input$roundvarin)&length(input$roundvarin ) >=1) {
-  #     for (i in 1:length(input$roundvarin ) ) {
-  #       varname<- input$roundvarin[i]
-  #       df[,varname]   <- round( df[,varname],input$rounddigits)
-  #     }
-  #   }
-  #   df
-  # })  
-  
-  
-  #### dataset Table output ------------
-  output$mytablex = renderDataTable({
-    df <- tabledata()  # need to change this to only dataset
-    validate(       need(!is.null(df), "Please select a data set"))
-    
-    datatable(df ,
-              extensions = c('ColReorder','Buttons','FixedColumns'),
-              options = list(dom = 'Bfrtip',
-                             searchHighlight = TRUE,
-                             pageLength=-1 ,
-                             lengthMenu = list(c(5, 10, 15, -1), c('5','10', '15', 'All')),
-                             colReorder = list(realtime = TRUE),
-                             buttons = 
-                               list('colvis', 'pageLength','print','copy', list(
-                                 extend = 'collection',
-                                 buttons = list(
-                                   list(extend='csv'  ,filename = 'plotdata'),
-                                   list(extend='excel',filename = 'plotdata'),
-                                   list(extend='pdf'  ,filename = 'plotdata')),
-                                 text = 'Download'
-                               )),
-                             scrollX = TRUE,scrollY = 400,
-                             fixedColumns = TRUE
-              ), 
-              filter = 'bottom',
-              style = "bootstrap")
-  })
-  
-  
-  #### GRAPH OPTIONS ####
-  # ------ X/Y axes ----
-  output$xcol <- renderUI({
-    df <-values$maindata
-    if (is.null(df)) return(NULL)
-    items=names(df)
-    names(items)=items
-    selectizeInput("x", "x variable:",choices = items,
-                options = list(
-                  
-                  onInitialize = I('function() { this.setValue(""); }')
-                ) #options
-    )
-    
-  })
-  
-  output$ycol <- renderUI({
-    df <- values$maindata
-    if (is.null(df)) return(NULL)
-    items=names(df)
-    names(items)=items
-    selectizeInput("y", "y variable(s):",choices=items,multiple=TRUE,
-                   options = list(
-                     plugins = list('remove_button', 'drag_drop'),
-                     onInitialize = I('function() { this.setValue(""); }')
-                     ) #list
-                   ) #options
-  })
-
-  output$scatter_covar <-  renderUI({
-    df <- values$maindata
-    if (is.null(df)) return(NULL)
-    items=names(df)
-    selectInput('scatter_covar', 'Add covariates (optional)', choices = items, 
-                selectize = TRUE, multiple = TRUE)
-  }) #renderUI output$scatter_covar
-  
-  # If an X is selected but no Y is selected, switch to the Histograms tab
-  observe({
-    if (!is.null(input$x) && is.null(input$y)) {
-      updateTabsetPanel(session, "graphicaltypes", "histograms_density")
-    }
-  })
-  
-  outputOptions(output, "ycol", suspendWhenHidden=FALSE)
-  outputOptions(output, "xcol", suspendWhenHidden=FALSE)
-  
-  
-  # ------ Graph size/Zoom ----
   output$xaxiszoom <- renderUI({
     df <-reorderdata2()
-    validate(need(!is.null(df), "Please select a data set"))
+    validate(       need(!is.null(df), "Please select a data set"))
     req(input$x)
     
     if (!is.numeric(df[,input$x] ) ) return(NULL)
@@ -987,22 +828,17 @@ function(input, output, session) {
     df <-reorderdata2()
     if ( is.null(input$y)  ) return(NULL)
     if ( !is.null(input$y)  ){
-      if (is.null(df)| !is.numeric(df[,"yvalues"] ) | (length(input$y) > 1 ) ) return(NULL)
-      if (all(is.numeric(df[,"yvalues"]) &&  (length(input$y) < 2 ) &&
-          input$facetscalesin!="free_y"&&
-          input$facetscalesin!="free")){
-        yvalues <- df[,"yvalues"][!is.na( df[,"yvalues"])]
+      if (is.null(df)| !is.numeric(df[,input$y] ) | (length(input$y) > 1 ) ) return(NULL)
+      if (all(is.numeric(df[,input$y]) &&  (length(input$y) < 2 ) &&
+              input$facetscalesin!="free_y"&&
+              input$facetscalesin!="free")){
+        yvalues <- df[,input$y][!is.na( df[,input$y])]
         ymin <- min(yvalues)
         ymax <- max(yvalues)
         ystep <- (ymax -ymin)/100
         sliderInput('yaxiszoomin',label = 'Zoom to Y variable range:', min=ymin, max=ymax, value=c(ymin,ymax),step=ystep)
-        
       }
     }
-    
-    
-    
-    
   })
   outputOptions(output, "yaxiszoom", suspendWhenHidden=FALSE)  
   
@@ -1031,8 +867,182 @@ function(input, output, session) {
   outputOptions(output, "lowery", suspendWhenHidden=FALSE)
   outputOptions(output, "uppery", suspendWhenHidden=FALSE)
   
+  output$catvar5 <- renderUI({
+    df <-reorderdata2()
+    validate(       need(!is.null(df), "Please select a data set"))
+    # if (is.null(df)) return(NULL)
+    items=names(df)
+    names(items)=items
+    MODEDF <- sapply(df, function(x) is.numeric(x))
+    NAMESTOKEEP2<- names(df)  [! MODEDF ]
+    
+    selectizeInput(  "catvar5in", 'Change levels of this variable:',
+                     choices =NAMESTOKEEP2 ,multiple=FALSE,
+                     options = list(    placeholder = 'Please select a variable',
+                                        onInitialize = I('function() { this.setValue(""); }')
+                     )
+    )
+  })
   
-  # ------ Color/Group/Split/Size/Fill Mappings ----
+  output$labeltext5 <- renderText({
+    df <- reorderdata2()
+    validate(       need(!is.null(df), "Please select a data set"))
+    if (is.null(input$catvar5in)) return("")
+    labeltext5out <- ""
+    if(input$catvar5in!="") {
+      varname<- input$catvar5in
+      labeltext5out <- c("Old labels",levels(as.factor(df[,varname]) ))
+    }
+    labeltext5out   
+  })   
+  
+  output$nlabels5 <- renderUI({
+    df <-reorderdata2()
+    validate(       need(!is.null(df), "Please select a data set"))
+    if (is.null(input$catvar5in)) return()
+    if (length(input$catvar5in ) <1)  return(NULL)
+    if ( input$catvar5in!=""){
+      nlevels <- length( unique( levels(as.factor( df[,input$catvar5in] ))))
+      levelsvalues <- levels(as.factor( df[,input$catvar5in] ))
+      textInput("customvarlabels5", label =  paste(input$catvar5in,"requires",nlevels,"new labels,
+                                                   type in a comma separated list below"),
+                value =   paste(as.character(levelsvalues),collapse=", ",sep="")
+      )
+    }
+    
+  })
+  
+  outputOptions(output, "catvar5", suspendWhenHidden=FALSE)
+  outputOptions(output, "nlabels5", suspendWhenHidden=FALSE)
+  outputOptions(output, "labeltext5", suspendWhenHidden=FALSE)
+  
+  recodedata5  <- reactive({
+    df <- reorderdata2()
+    validate(       need(!is.null(df), "Please select a data set"))
+    if (is.null(input$catvar5in)) {
+      return(df)
+    }
+    if(input$catvar5in!="") {
+      varname<- input$catvar5in
+      xlabels <- input$customvarlabels5 
+      xlabels <- gsub("\\\\n", "\\\n", xlabels)
+      df[,varname] <- as.factor(df[,varname])
+      levels(df[,varname])  <-  unlist (strsplit(xlabels, ",") )
+    }
+    df
+  })
+  
+  output$onerowidgroup <- renderUI({
+    df <-values$maindata
+    validate(       need(!is.null(df), "Please select a data set"))
+    items=names(df)
+    names(items)=items
+    items= items 
+    items= c(items, "yvars","yvalues") 
+    if (!is.null(input$pastevarin)&length(input$pastevarin) >1 ){
+      nameofcombinedvariables<- paste(as.character(input$pastevarin),collapse="_",sep="") 
+      items= c(items,nameofcombinedvariables)
+    }
+    selectizeInput("onerowidgroupin", "ID(s):", choices = items,multiple=TRUE,
+                   options = list(
+                     placeholder = 'Please select at least one variable that is not in y variable(s)',
+                     onInitialize = I('function() { this.setValue(""); }'),
+                     plugins = list('remove_button')
+                   )
+    )
+    
+  })
+  outputOptions(output, "onerowidgroup", suspendWhenHidden=FALSE)
+  
+  filterdata7  <- reactive({
+    df <- recodedata5()
+    validate(       need(!is.null(df), "Please select a data set"))
+    if(input$filtertoonerowbyid && !is.null(input$onerowidgroupin) && length(input$onerowidgroupin) >0 ){
+    
+        #dots <- lapply(c(as.vector(input$onerowidgroupin),"yvars" ), as.symbol)
+        vars<- c(as.vector(input$onerowidgroupin),"yvars" )
+        df <-   df %>%
+        group_by(!!!syms(vars))
+        df<- df %>% filter(row_number()==1 ) %>%
+          ungroup()
+    }
+    
+    as.data.frame(df)
+  })
+
+  ### Final data ----
+  tabledata <- reactive({
+    df <- filterdata7()
+    as.data.frame(df)
+  })
+  stackdata <- reactive({
+    
+    df <- filterdata7() 
+    validate(       need(!is.null(df), "Please select a data set"))
+    #if (is.null(df)) return(NULL)
+    if (!is.null(df)){
+      validate(  need(!is.element(input$x,input$y) ,
+                      "Please select a different x variable or remove the x variable from the list of y variable(s)"))
+      
+      tidydata <- NULL
+      if(!is.null(input$y) ){
+        
+        validate(need(all(input$y %in% names(df)), "Invalid y value(s)"))
+        if(       all( sapply(df[,as.vector(input$y)], is.numeric)) )
+        {
+          tidydata <- df %>%
+            gather_( "yvars", "yvalues", gather_cols=as.vector(input$y) ) #%>%
+          # mutate(combinedvariable="Choose two variables to combine first")
+        } else {
+          tidydata <- df %>%
+            gather_( "yvars", "yvalues", gather_cols=as.vector(input$y) ) %>%
+            mutate(yvalues=as.factor(as.character(yvalues) ))#%>%
+          # mutate(combinedvariable="Choose two variables to combine first")
+        }
+      } else {
+        tidydata <- df
+        tidydata$yvars <- "None"
+        tidydata$yvalues <- NA
+      }
+      
+      tidydata
+    }
+  })
+  
+  finalplotdata <- reactive({
+    df <- stackdata()
+    as.data.frame(df)
+  })
+  
+  #### dataset Table output ------------
+  output$mytablex = renderDataTable({
+    df <- tabledata()  # need to change this to only dataset
+    validate(       need(!is.null(df), "Please select a data set"))
+    
+    datatable(df ,
+              extensions = c('ColReorder','Buttons','FixedColumns'),
+              options = list(dom = 'Bfrtip',
+                             searchHighlight = TRUE,
+                             pageLength=-1 ,
+                             lengthMenu = list(c(5, 10, 15, -1), c('5','10', '15', 'All')),
+                             colReorder = list(realtime = TRUE),
+                             buttons = 
+                               list('colvis', 'pageLength','print','copy', list(
+                                 extend = 'collection',
+                                 buttons = list(
+                                   list(extend='csv'  ,filename = 'plotdata'),
+                                   list(extend='excel',filename = 'plotdata'),
+                                   list(extend='pdf'  ,filename = 'plotdata')),
+                                 text = 'Download'
+                               )),
+                             scrollX = TRUE,scrollY = 400,
+                             fixedColumns = TRUE
+              ), 
+              filter = 'bottom',
+              style = "bootstrap")
+  })
+  
+  # Color/Group/Split/Size/Fill Mappings ----
   output$colour <- renderUI({
     df <-values$maindata
     validate(       need(!is.null(df), "Please select a data set"))
@@ -1048,7 +1058,6 @@ function(input, output, session) {
     selectInput("colorin", "Colour By:",items) 
     
   })
-  
   output$group <- renderUI({
     df <-values$maindata
     validate(       need(!is.null(df), "Please select a data set"))
@@ -1065,7 +1074,6 @@ function(input, output, session) {
   })
   outputOptions(output, "colour", suspendWhenHidden=FALSE)
   outputOptions(output, "group", suspendWhenHidden=FALSE)
-  
   
   output$facet_col <- renderUI({
     df <-values$maindata
@@ -1095,7 +1103,6 @@ function(input, output, session) {
     }
     selectInput("facetrowin", "Row Split:", items)
   })
-  
   output$facet_col_extra <- renderUI({
     df <-values$maindata
     if (is.null(df)) return(NULL)
@@ -1133,7 +1140,6 @@ function(input, output, session) {
     
     selectInput("facetrowextrain", "Extra Row Split:",items)
   })
-  
   output$facetscales <- renderUI({
     items= c("fixed","free_x","free_y","free")   
     if (!is.null(input$y)&length(input$y) > 1 ){
@@ -1165,7 +1171,6 @@ function(input, output, session) {
     selectInput("pointsizein", "Size By:",items )
     
   })
-  
   output$fill <- renderUI({
     df <-values$maindata
     if (is.null(df)) return(NULL)
@@ -1179,7 +1184,6 @@ function(input, output, session) {
     }
     selectInput("fillin", "Fill By:"    ,items )
   })
-  
   output$weight <- renderUI({
     df <-values$maindata
     if (is.null(df)) return(NULL)
@@ -1196,8 +1200,11 @@ function(input, output, session) {
   outputOptions(output, "pointsize", suspendWhenHidden=FALSE)
   outputOptions(output, "fill", suspendWhenHidden=FALSE)
   outputOptions(output, "weight", suspendWhenHidden=FALSE)
-  #### GGplot of graph ####
   
+  
+  
+  
+  ### GGPLOT ----
   plotObject <- reactive({
     # Don't generate a new plot if the user wants to refresh manually
     if (!input$auto_update_plot) {
@@ -1207,15 +1214,9 @@ function(input, output, session) {
         return(values$prevPlot)
       }
     }
-    
     plotdata <- finalplotdata()
     validate(need(!is.null(plotdata), "Please select a data set") )
-    validate(
-      need(input$x != '', "No variable(s) selected")
-    )
-    # validate(need(!(all(is.na(plotdata["",])) && all(is.na(plotdata[,"yvalues"]))),
-    #               "No variable(s) selected"))
-    
+    validate(need(input$x != '', "No variable(s) selected"))
     if(!is.null(plotdata)) {
       
       
@@ -1236,7 +1237,6 @@ function(input, output, session) {
 
       if (!is.null(input$y) ){
         
-        # Set up correlation coefficients
         if(input$addcorrcoeff){
           if( input$addcorrcoeffignoregroup){
             listvarcor <- c(input$colorin,input$fillin,
@@ -1279,7 +1279,7 @@ function(input, output, session) {
         
 
         
-        p <- ggplot(plotdata, aes_string(x=input$x, y="yvalues"))
+        p <- sourceable(ggplot(plotdata, aes_string(x=input$x, y="yvalues")))
         
         if (input$showtarget)  {
           if ( is.numeric( plotdata[,input$x] ) ) {
@@ -1343,7 +1343,7 @@ function(input, output, session) {
         if (input$line=="Lines"&input$pointsizein != 'None'& input$lineignorecol & input$lineignoresize )
           p <- p + geom_line(size=input$linesize,alpha=input$linestransparency,linetype=input$linetypes,colour=input$colline)
         
-        ##### Boxplot Section START -----
+        #### Boxplot Section START ----
         
         if (input$boxplotaddition){
           if (input$groupin != 'None'& !input$boxplotignoregroup ){
@@ -1379,10 +1379,8 @@ function(input, output, session) {
           
           
         }
-        #### Boxplot Section END
-        
-        
-        ###### Smoothing Section START -----
+        ###### Boxplot Section END
+        ###### Smoothing Section START ----
         if(!is.null(input$Smooth) ){
           familyargument <- input$loessfamily
           if(input$smoothmethod=="glm") {
@@ -1497,16 +1495,11 @@ function(input, output, session) {
             
           }
           
+          ###### smooth Section END
         }
         
         
-        
-        ###### smooth Section END
-        
-        
-        
-        # ###### Mean section START -----
-        # 
+        # ###### Mean section  START ----
         # 
         # if (!input$meanignoregroup) {
         #   if (!input$meanignorecol) {
@@ -1648,36 +1641,525 @@ function(input, output, session) {
         # }
         # ###### Mean section  END 
         # 
-        ###### Corr coefficient Start -----
-        if(input$addcorrcoeff&&!is.null(cors)&&!input$addcorrcoeffignoregroup) {
-          p <- p +
-           geom_text_repel(data=data.frame(cors), aes(label=paste("italic(r) == ", corcoeff)), 
-          x=Inf, y=Inf, parse=TRUE,size=5)
-        }
-        
-        if(input$addcorrcoeff&&!is.null(cors)&&input$addcorrcoeffignoregroup) {
-          p <- p +
-            geom_text_repel(data=data.frame(cors), aes(group=NULL,label=paste("italic(r) == ", corcoeff)), 
-                            x=Inf, y=Inf, parse=TRUE,size=5)
-        }
-        
-        
-        #### Corr coefficient END
-       
-        
-         
-        
-      } 
+        # ###### Median PI section  START ----
+        # if (!input$medianignoregroup) {
+        #   
+        #   if (!input$medianignorecol) {
+        #     
+        #     if (input$Median=="Median") {
+        #       if(input$medianlines&input$pointsizein != 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line")
+        #       
+        #       if(input$medianlines&input$pointsizein == 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",size=input$medianlinesize)
+        #       
+        #       
+        #       if(input$medianpoints)           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "point")
+        #       
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein == 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI) ,size=input$medianlinesize,alpha=input$PItransparency,col=NA)+ 
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI) ,size=input$medianlinesize,alpha=0)
+        #       
+        #       if ( input$sepguides )
+        #         p <-   p + 
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #       
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein != 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI), alpha=input$PItransparency,col=NA)+
+        #         stat_sum_df("median_hilow", geom = "smooth"  ,fun.args=list(conf.int=input$PI),alpha=0)
+        #       
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #       
+        #     }
+        #     
+        #     if (input$Median!="None" & input$medianvalues )  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = median.n,geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold",
+        #                      show.legend=FALSE,size=6)}
+        #     if (input$Median!="None" & input$medianN)  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = give.n, geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold", 
+        #                      show.legend=FALSE,size=6)      
+        #     }  
+        #   }
+        #   
+        #   
+        #   
+        #   if (input$medianignorecol) {
+        #     mediancol <- input$colmedian
+        #     if (input$Median=="Median") {
+        #       if(input$medianlines&input$pointsizein != 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",col=mediancol)
+        #       
+        #       if(input$medianlines&input$pointsizein == 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",col=mediancol,size=input$medianlinesize)
+        #       
+        #       if(input$medianpoints)           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "point",col=mediancol)
+        #       
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein == 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon", fun.args=list(conf.int=input$PI), alpha=input$PItransparency,col=NA)+
+        #         stat_sum_df("median_hilow", geom = "smooth", fun.args=list(conf.int=input$PI), size=input$medianlinesize,col=mediancol,alpha=0)
+        #       
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     if (input$Median=="Median/PI"&input$pointsizein != 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI),alpha=input$PItransparency,col=NA)+
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI),col=mediancol,
+        #                     alpha=0)          
+        #       
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     if (input$Median!="None" & input$medianvalues )  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = median.n,geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold",colour=mediancol,
+        #                      show.legend=FALSE,size=6)}
+        #     if (input$Median!="None" & input$medianN)  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = give.n, geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold", colour=mediancol,
+        #                      show.legend=FALSE,size=6)      
+        #     }       
+        #     
+        #   }
+        # }
+        # 
+        # if (input$medianignoregroup) {
+        #   if (!input$medianignorecol) {
+        #     if (input$Median=="Median") {
+        #       if(input$medianlines&input$pointsizein != 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",aes(group=NULL))
+        #       if(input$medianlines&input$pointsizein == 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",aes(group=NULL),size=input$medianlinesize)
+        #       
+        #       if(input$medianpoints)           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "point",aes(group=NULL))
+        #       
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein == 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI),aes(group=NULL),alpha=input$PItransparency,col=NA)+ 
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI),aes(group=NULL),size=input$medianlinesize,alpha=0)   
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein != 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI),aes(group=NULL),alpha=input$PItransparency,col=NA)+ 
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI),aes(group=NULL),alpha=0)
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     if (input$Median!="None" & input$medianvalues )  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = median.n, aes(group=NULL),geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold",fill="white",
+        #                      show.legend=FALSE,
+        #                      size=6)}
+        #     if (input$Median!="None" & input$medianN)  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = give.n, aes(group=NULL), geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold", fill="white",
+        #                      show.legend=FALSE,size=6)      
+        #     }
+        #     
+        #     
+        #   }
+        #   
+        #   
+        #   if (input$medianignorecol) {
+        #     mediancol <- input$colmedian
+        #     if (input$Median=="Median") {
+        #       if(input$medianlines&input$pointsizein != 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",col=mediancol,aes(group=NULL))
+        #       if(input$medianlines&input$pointsizein == 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",col=mediancol,aes(group=NULL),size=input$medianlinesize)
+        #       
+        #       if(input$medianpoints)           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "point",col=mediancol,aes(group=NULL))
+        #       
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein == 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI),aes(group=NULL),alpha=input$PItransparency,col=NA)+ 
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI),col=mediancol,aes(group=NULL),size=input$medianlinesize,alpha=0)
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     if (input$Median=="Median/PI"&input$pointsizein != 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI),aes(group=NULL),alpha=input$PItransparency,col=NA)+ 
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI),col=mediancol,aes(group=NULL),alpha=0)
+        #       
+        #       
+        #       
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     
+        #     
+        #     if (input$Median!="None" & input$medianvalues )  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = median.n, aes(group=NULL),geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold",colour=mediancol,
+        #                      show.legend=FALSE,size=6)}
+        #     if (input$Median!="None" & input$medianN)  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = give.n, aes(group=NULL), geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold", colour=mediancol,
+        #                      show.legend=FALSE,size=6)      
+        #     }
+        #     
+        #   }
+        # }
+        # 
+        # ###### RQSS SECTION START  ----
+        # if (!input$ignoregroupqr) {
+        #   if (!input$ignorecolqr) {
+        #     if (input$Tauvalue) {
+        #       if(!input$hidedynamic){
+        #         p <- p +  stat_quantile(method = "rqss",quantiles =input$Tau,size=1.5,
+        #                                 linetype="solid", 
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))       
+        #       }
+        #       
+        #       if (input$mid)
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.5,size=1.5,
+        #                                 linetype="solid",
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$ninetieth)
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.90,size=1,
+        #                                 linetype="dashed",
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$tenth)
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.1,size=1,
+        #                                 linetype="dashed",
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$up)
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.95,size=1,
+        #                                 linetype="dashed",
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$low) 
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.05,size=1,
+        #                                 linetype="dashed",
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$ninetyseventh)
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.97,size=1,
+        #                                 linetype="dashed",
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$third) 
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.03,size=1,
+        #                                 linetype="dashed",
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       
+        #       
+        #     }
+        #   }
+        #   if (input$ignorecolqr) {
+        #     colqr <- input$colqr
+        #     if (input$Tauvalue) {
+        #       if(!input$hidedynamic){
+        #         p <- p +  stat_quantile(method = "rqss",quantiles =input$Tau,size=1.5,
+        #                                 linetype="solid", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty)) 
+        #       }
+        #       
+        #       
+        #       if (input$mid)
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.5,size=1.5,
+        #                                 linetype="solid", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$ninetieth)
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.90,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$tenth)
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.1,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$up)
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.95,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$low) 
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.05,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$ninetyseventh)
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.97,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$third) 
+        #         p <- p +  stat_quantile(method = "rqss",quantiles = 0.03,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #     }
+        #   }
+        # }
+        # 
+        # 
+        # if (input$ignoregroupqr) {
+        #   if (!input$ignorecolqr) {
+        #     if (input$Tauvalue) {
+        #       if(!input$hidedynamic){
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles =input$Tau,size=1.5,
+        #                                 linetype="solid",
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty)) 
+        #       }
+        #       
+        #       if (input$mid)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.5,size=1.5,
+        #                                 linetype="solid",
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$ninetieth)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.90,size=1,
+        #                                 linetype="dashed", 
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$tenth)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.1,size=1,
+        #                                 linetype="dashed",
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$up)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.95,size=1,
+        #                                 linetype="dashed", 
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$low) 
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.05,size=1,
+        #                                 linetype="dashed", 
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$ninetyseventh)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.97,size=1,
+        #                                 linetype="dashed", 
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$third)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.03,size=1,
+        #                                 linetype="dashed", 
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))     
+        #     }
+        #   }
+        #   if (input$ignorecolqr) {
+        #     colqr <- input$colqr
+        #     if (input$Tauvalue) {
+        #       if(!input$hidedynamic){
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles =input$Tau,size=1.5,
+        #                                 linetype="solid",col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))     
+        #       }
+        #       
+        #       
+        #       if (input$mid)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.5,size=1.5,
+        #                                 linetype="solid", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$ninetieth)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.90,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$tenth)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.1,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$up)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.95,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$low) 
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.05,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       if (input$ninetyseventh)
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.97,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #       
+        #       if (input$third) 
+        #         p <- p +  stat_quantile(aes(group=NULL),method = "rqss",quantiles = 0.03,size=1,
+        #                                 linetype="dashed", col=colqr,
+        #                                 formula=y ~ qss(x, constraint= input$Constraints,
+        #                                                 lambda=input$Penalty))
+        #     }
+        #   }
+        # }
+        # 
+        # 
+        # ###### RQSS SECTION END
+        # 
+        # ###### Corr coefficient Start ----
+        # if(input$addcorrcoeff&&!is.null(cors)&&!input$addcorrcoeffignoregroup) {
+        #   p <- p +
+        #    geom_text_repel(data=data.frame(cors), aes(label=paste("italic(r) == ", corcoeff)), 
+        #   x=Inf, y=Inf, parse=TRUE,size=5)
+        # }
+        # 
+        # if(input$addcorrcoeff&&!is.null(cors)&&input$addcorrcoeffignoregroup) {
+        #   p <- p +
+        #     geom_text_repel(data=data.frame(cors), aes(group=NULL,label=paste("italic(r) == ", corcoeff)), 
+        #                     x=Inf, y=Inf, parse=TRUE,size=5)
+        # }
+        # 
+        # 
+        # #### Corr coefficient END
+        # 
+        # 
+        # ###### KM SECTION START ----
+        # 
+        # if (input$KM!="None") {
+        #   p <- sourceable(ggplot(plotdata, aes_string(time=input$x, status="yvalues")))
+        #   if (input$colorin != 'None')
+        #     p <- p + aes_string(color=input$colorin)
+        #   if (input$fillin != 'None')
+        #     p <- p + aes_string(fill=input$fillin)
+        #   if (input$groupin != 'None' & !is.factor(plotdata[,input$x]))
+        #     p <- p + aes_string(group=input$groupin)
+        # }
+        # p <- p + xlab(input$x)
+        # if (input$KM=="KM/CI") {
+        #   p <- p +
+        #     geom_kmband(alpha=input$KMCItransparency,conf.int = input$KMCI,trans=input$KMtrans)                 }
+        # 
+        # 
+        # if (input$KM!="None") {
+        #   p  <- p +
+        #     geom_smooth(stat="km",trans=input$KMtrans)
+        # }
+        # if (input$censoringticks) {
+        #   p  <- p +
+        #     geom_kmticks(trans=input$KMtrans)
+        # }
+        # ###### KM SECTION END
+      }
       
-      
-      
-      ###### Univariate SECTION START -----
+      ###### Univariate SECTION START ----
       
       if (is.null(input$y) ) {
         
+        ### HISTOGRAM ----
         if(is.numeric(plotdata[,input$x]) ){
           #validate(       need(is.numeric(plotdata[,input$x]), "Please select a numeric x variable"))
-            p <- ggplot(plotdata, aes_string(x=input$x))
+            p <- sourceable(ggplot(plotdata, aes_string(x=input$x)))
           if (input$colorin != 'None')
             p <- p + aes_string(color=input$colorin)
           if (input$fillin != 'None')
@@ -1694,7 +2176,8 @@ function(input, output, session) {
           }
           if ( input$densityaddition){
             p <- p+
-              geom_density(alpha=0.2, size = 1.0)
+              geom_density(alpha=0.1)
+            
           }
           if ( input$mlineaddition){
             if (input$colorin == "None"){
@@ -1714,13 +2197,14 @@ function(input, output, session) {
                 geom_vline(data=mu, aes_string(xintercept=as.numeric(mu$grp.mean), 
                                                color=input$colorin),
                            linetype="dashed",size = 1.5)
-              } # if input$colorin
+            } # if input$colorin
             
           }
         }
         
+        ### BAR PLOT ----
         if(!is.numeric(plotdata[,input$x]) ){
-          p <- ggplot(plotdata, aes_string(x=input$x))
+          p <- sourceable(ggplot(plotdata, aes_string(x=input$x)))
           
           if (input$colorin != 'None')
             p <- p + aes_string(color=input$colorin)
@@ -1778,17 +2262,13 @@ function(input, output, session) {
           }
           
         }
-
-        
-       
-        
         
       }
       
       
       ###### Univariate SECTION END
       
-      ###### Facets SECTION START----
+      ###### FACETS SECTION START ------
       facets <- paste(input$facetrowin,'~', input$facetcolin)
       
       if (input$facetrowextrain !="."&input$facetrowin !="."){
@@ -1831,10 +2311,48 @@ function(input, output, session) {
         }
       }
       
-      # Facets SECTION END 
+      #### LOG AXES ----
+      
+      if (input$logy& is.numeric(plotdata[,"yvalues"])& input$logyformat)
+        p <- p + scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                               labels = trans_format("log10", math_format(10^.x)))
       
       
-      ###### Theme SECTION START----
+      if (input$logy& is.numeric(plotdata[,"yvalues"])& !input$logyformat)
+        p <- p + scale_y_log10() 
+      
+      if (input$logx&  is.numeric(plotdata[,input$x])& input$logxformat)
+        p <- p + scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                               labels = trans_format("log10", math_format(10^.x))) 
+      
+      if (input$logx&  is.numeric(plotdata[,input$x])& !input$logxformat)
+        p <- p + scale_x_log10() 
+      
+      
+      if (input$scientificy & is.numeric(plotdata[,"yvalues"]) )
+        p <- p  + 
+        scale_y_continuous(labels=comma )
+      
+      if (input$scientificx  &  is.numeric(plotdata[,input$x]) )
+        p <- p  + 
+        scale_x_continuous(labels=comma) 
+      
+      if (input$percenty && is.numeric(plotdata[,"yvalues"])&& !input$logy)
+        p <- p  + 
+        scale_y_continuous(labels=percent )
+      
+      if (input$percentx && is.numeric(plotdata[,input$x]  )&& !input$logx)
+        p <- p  + 
+        scale_x_continuous(labels=percent) 
+      
+      if (!input$percentx && input$customxticks) {
+        p <- p  + 
+          scale_x_continuous(breaks=as.numeric(unique(unlist (strsplit(input$xaxisbreaks, ","))) ),
+                             minor_breaks = as.numeric(unique(unlist (strsplit(input$xaxisminorbreaks, ","))) ) ) 
+      }
+      
+      #### THEME ----
+      
       
       if (!is.null(input$y) & length(input$y) >= 2 & input$ylab=="" ){
         p <- p + ylab("Y variable(s)")
@@ -1849,11 +2367,11 @@ function(input, output, session) {
       
       if (input$xlab!="") {
         p <- p + xlab(xlablinebreak)
-        # p <- attach_source_dep(p, "xlablinebreak")
+        p <- attach_source_dep(p, "xlablinebreak")
       }
       if (input$ylab!="") {
         p <- p + ylab(ylablinebreak)
-        # p <- attach_source_dep(p, "ylablinebreak")
+        p <- attach_source_dep(p, "ylablinebreak")
       }
       
       
@@ -2058,14 +2576,10 @@ function(input, output, session) {
       p <- p + theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank(),
                      element_line(size = 1,colour = "black"))
       
-      #### Theme SECTION END 
+      #p <- ggplotly(p)
       
-      ###### END SECTION START ----
-      
-      # p <- ggplotly(p)
-      # 
-      # # You should attach any variables (dependencies) that are used in the
-      # # source code
+      # You should attach any variables (dependencies) that are used in the
+      # source code
       # p <- attach_source_dep(p, c("var1", "var2", "var3"))
       
       values$prevPlot <- p
@@ -2086,13 +2600,10 @@ function(input, output, session) {
   output$ui_plot <-  renderUI({
     
     if(input$input_type == "ggplot"){
-      plotOutput('plot',  width = "100%" ,height = input$height,
-                 click = "plot_click",
-                 hover = hoverOpts(id = "plot_hover", delayType = "throttle"),
-                 brush = brushOpts(id = "plot_brush"))
+      plotOutput('plot',  width = "100%" ,height = input$height)
     } else{
       plotlyOutput('plotly.plot',  width = "100%" ,height = input$height)
-        }
+    }
   })
   
   
@@ -2168,7 +2679,7 @@ function(input, output, session) {
       print("no covariates in model")
     }
     
-
+    
     
     # FUTURE UPDATE: THINK ABOUT STANDARDIZED COEFFS
     # IF (STANDARDIZE) []
@@ -2186,8 +2697,8 @@ function(input, output, session) {
     if (covar.obj=="no covariates in model") {
       print(covar.obj)
     } else {
-    lm.beta.coavr.fit <- lm.beta(covar.obj)
-    summary.lm.beta(lm.beta.coavr.fit)}
+      lm.beta.coavr.fit <- lm.beta(covar.obj)
+      summary.lm.beta(lm.beta.coavr.fit)}
     
   })
   
@@ -2198,29 +2709,29 @@ function(input, output, session) {
     # validate(need(!c(input$x,input$y),"no variables selected"))
     # if (input$x == "" | input$y == "" ) return(NULL)
     req(input$x, input$y)
-
+    
     if (!is.null(input$scatter_covar)) {
       scatter_formula <- reformulate(c(input$scatter_covar,input$x),input$y)
     } else {
       scatter_formula <- reformulate(c(input$x),input$y)
-      }
-
+    }
+    
     
     # FUTURE UPDATE: THINK ABOUT STANDARDIZED COEFFS
     # IF (STANDARDIZE) []
-
+    
     lm.fit <- lm(scatter_formula, data=df)
     lm.fit
   })
   
   # X Regression summary
   output$fit.beta <- renderPrint({
-  
-  req(fit.beta.obj())
+    
+    req(fit.beta.obj())
     lm.beta.fit <- lm.beta(fit.beta.obj())
     summary.lm.beta(lm.beta.fit)
   })
-
+  
   # Compare models
   output$anova.model <- renderPrint({
     xreg.model <- fit.beta.obj()
@@ -2309,7 +2820,7 @@ function(input, output, session) {
     
   })
   
-
+  
   # Multicollinearity 
   output$VIF <- renderPrint({
     model.reg <- fit.beta.obj()
@@ -2318,7 +2829,7 @@ function(input, output, session) {
     vif(model.reg)
     
   })
-
+  
   output$tolerance <- renderPrint({
     model.reg <- fit.beta.obj()
     req(model.reg)
@@ -2334,9 +2845,9 @@ function(input, output, session) {
   
   # for testing purposes
   #values$maindata <- read.csv("data/sample_data.csv", na.strings = c("NA","."))
-
+  
   #### Descriptive Stats tab ####
-
+  
   dstatsTableDataStacked <- reactive({
     validate(
       need(!is.null(finalplotdata()), "Please select a data set") 
@@ -2345,7 +2856,7 @@ function(input, output, session) {
     stacked <- finalplotdata()
     lvl <- unique(as.character(stacked[,"yvars"]))
     validate(need(!(lvl=="None" && all(is.na(stacked[,"yvalues"]))), 
-        "No y variable(s) selected"))
+                  "No y variable(s) selected"))
     if (input$dstatscolextrain != ".") {
       stacked <- stacked[, c(input$x, input$dstatscolextrain, "yvars", "yvalues")]
     } else {
@@ -2354,7 +2865,7 @@ function(input, output, session) {
     stacked$.id <- 1:(nrow(stacked)/length(unique(stacked$yvars)))
     stacked
   })
-
+  
   dstatsTableData <- reactive({
     stacked <- dstatsTableDataStacked()
     vars <- unique(as.character(stacked$yvars))
@@ -2378,55 +2889,55 @@ function(input, output, session) {
     attr(df, "vars") <- vars
     df
   })
-
+  
   stats.apply.rounding <- function(x, digits=3, digits.pct=1, round.median.min.max=F) {
-      r <- lapply(x, signif_pad, digits=digits)
-      r[x == 0] <- prettyNum(0, nsmall=digits-1)  # Fix for special case 0
-      nr <- c("N", "FREQ")
-      if (!round.median.min.max) {
-          nr <- c(nr, "MEDIAN", "MIN", "MAX")
-      }
-      nr <- nr[nr %in% names(x)]
-      r[nr] <- x[nr]
-      if (!is.null(x$PCT)) {
-          r$PCT <- round(x$PCT, digits.pct)
-      }
-      r
+    r <- lapply(x, signif_pad, digits=digits)
+    r[x == 0] <- prettyNum(0, nsmall=digits-1)  # Fix for special case 0
+    nr <- c("N", "FREQ")
+    if (!round.median.min.max) {
+      nr <- c(nr, "MEDIAN", "MIN", "MAX")
+    }
+    nr <- nr[nr %in% names(x)]
+    r[nr] <- x[nr]
+    if (!is.null(x$PCT)) {
+      r$PCT <- round(x$PCT, digits.pct)
+    }
+    r
   }
-
+  
   dstatsRenderCont <- reactive({
-      all <- input$dstats_cont_list
-      all <- all[all %in% allstats]
-      all <- c("None", all)
-
-      stats.fun <- list(
-        "None"                 = function(x) "",
-        "N"                    = function(x) x$N,
-        "Mean"                 = function(x) x$MEAN,
-        "SD"                   = function(x) x$SD,
-        "CV%"                  = function(x) x$CV,
-        "Median"               = function(x) x$MEDIAN,
-        "Min"                  = function(x) x$MIN,
-        "Max"                  = function(x) x$MAX,
-        "IQR"                  = function(x) x$IQR,
-        "Geo. Mean"            = function(x) x$GMEAN,
-        "Geo. CV%"             = function(x) x$GCV,
-        "Mean (SD)"            = function(x) sprintf("%s (%s)", x$MEAN, x$SD),
-        "Mean (CV%)"           = function(x) sprintf("%s (%s)", x$MEAN, x$CV),
-        "Mean (SD) (CV%)"      = function(x) sprintf("%s (%s) (%s)", x$MEAN, x$SD, x$CV),
-        "Mean (Median)"        = function(x) sprintf("%s (%s)", x$MEAN, x$MEDIAN),
-        "[Min, Max]"           = function(x) sprintf("[%s, %s]", x$MIN, x$MAX),
-        "Median [Min, Max]"    = function(x) sprintf("%s [%s, %s]", x$MEDIAN, x$MIN, x$MAX),
-        "Median [IQR]"         = function(x) sprintf("%s [%s]", x$MEDIAN, x$IQR),
-        "Geo. Mean (Geo. CV%)" = function(x) sprintf("%s (%s)", x$GMEAN, x$GCV))
-
-      function(x) {
-          s <- stats.apply.rounding(stats.default(x), digits=input$dstats_sigfig,
-              round.median.min.max=input$round_median_min_max)
-          sapply(all, function(l) stats.fun[[l]](s))
-      }
+    all <- input$dstats_cont_list
+    all <- all[all %in% allstats]
+    all <- c("None", all)
+    
+    stats.fun <- list(
+      "None"                 = function(x) "",
+      "N"                    = function(x) x$N,
+      "Mean"                 = function(x) x$MEAN,
+      "SD"                   = function(x) x$SD,
+      "CV%"                  = function(x) x$CV,
+      "Median"               = function(x) x$MEDIAN,
+      "Min"                  = function(x) x$MIN,
+      "Max"                  = function(x) x$MAX,
+      "IQR"                  = function(x) x$IQR,
+      "Geo. Mean"            = function(x) x$GMEAN,
+      "Geo. CV%"             = function(x) x$GCV,
+      "Mean (SD)"            = function(x) sprintf("%s (%s)", x$MEAN, x$SD),
+      "Mean (CV%)"           = function(x) sprintf("%s (%s)", x$MEAN, x$CV),
+      "Mean (SD) (CV%)"      = function(x) sprintf("%s (%s) (%s)", x$MEAN, x$SD, x$CV),
+      "Mean (Median)"        = function(x) sprintf("%s (%s)", x$MEAN, x$MEDIAN),
+      "[Min, Max]"           = function(x) sprintf("[%s, %s]", x$MIN, x$MAX),
+      "Median [Min, Max]"    = function(x) sprintf("%s [%s, %s]", x$MEDIAN, x$MIN, x$MAX),
+      "Median [IQR]"         = function(x) sprintf("%s [%s]", x$MEDIAN, x$IQR),
+      "Geo. Mean (Geo. CV%)" = function(x) sprintf("%s (%s)", x$GMEAN, x$GCV))
+    
+    function(x) {
+      s <- stats.apply.rounding(stats.default(x), digits=input$dstats_sigfig,
+                                round.median.min.max=input$round_median_min_max)
+      sapply(all, function(l) stats.fun[[l]](s))
+    }
   })
-
+  
   # Note: copy of output$facet_col_extra yvars and yvalues and xvar remved
   output$dstats_col_extra <- renderUI({
     df <-values$maindata
@@ -2450,7 +2961,7 @@ function(input, output, session) {
       checkboxInput('flipthelevelsin', 'Flip the Order of the Columns', value = FALSE)
     }
   })  
-
+  
   dstatsTable <- reactive({
     # Don't generate a new table if the user wants to refresh manually
     if (!input$auto_update_table) {
@@ -2465,7 +2976,7 @@ function(input, output, session) {
     )
     
     df <- dstatsTableData() 
-
+    
     if(!is.null(df)) {
       vars <- attr(df, "vars")
       names(vars) <- vars
@@ -2477,7 +2988,7 @@ function(input, output, session) {
           }
         }
       }
-
+      
       LHS <- paste(vars, collapse=" + ")
       RHS <- input$x
       if (!is.null(df[[input$dstatscolextrain]])) {
@@ -2489,7 +3000,7 @@ function(input, output, session) {
         }
       }
       formula <- as.formula(paste("~", paste(c(LHS, RHS), collapse=" | ")))
-
+      
       
       overall <- if (input$table_incl_overall) "Overall" else FALSE
       t <- capture.output(table1(formula, data=df, overall=overall,
@@ -2504,7 +3015,7 @@ function(input, output, session) {
   output$dstats <- renderUI({
     HTML(dstatsTable())
   })
-
+  
   #observe({
   #  df <- values$maindata
   #  if (is.null(df)) return(NULL)
@@ -2515,14 +3026,14 @@ function(input, output, session) {
   observeEvent(values$maindata, {
     relabels <- character(0)
   })
-
-
+  
+  
   observe({
     yvars <- input$y
     nyvars <- length(yvars)
-
+    
     for (i in seq_len(quickRelabel$numTotal)) {
-        shinyjs::hide(paste0("quick_relabel_", i))
+      shinyjs::hide(paste0("quick_relabel_", i))
     }
     for (i in seq_len(nyvars)) {
       lab <- as.character(yvars[i])
@@ -2532,27 +3043,27 @@ function(input, output, session) {
         relabels[lab] <- lab
       }
       if (i <= quickRelabel$numTotal) {
-          updateTextInput(session, 
-                  inputId=paste0("quick_relabel_", i),
-                  label=if (i==1) "Quick HTML Labels" else NULL,
-                  value=lab)
+        updateTextInput(session, 
+                        inputId=paste0("quick_relabel_", i),
+                        label=if (i==1) "Quick HTML Labels" else NULL,
+                        value=lab)
       } else {
-          insertUI(
-            selector = "#quick_relabel_placeholder", where = "beforeEnd",
-            immediate = TRUE,
-            div(class = "quick_relabel",
-                textInput(
-                  inputId=paste0("quick_relabel_", i),
-                  label=if (i==1) "Quick HTML Labels" else NULL,
-                  value=lab)
-            )
+        insertUI(
+          selector = "#quick_relabel_placeholder", where = "beforeEnd",
+          immediate = TRUE,
+          div(class = "quick_relabel",
+              textInput(
+                inputId=paste0("quick_relabel_", i),
+                label=if (i==1) "Quick HTML Labels" else NULL,
+                value=lab)
           )
-          quickRelabel$numTotal <- quickRelabel$numTotal + 1
+        )
+        quickRelabel$numTotal <- quickRelabel$numTotal + 1
       }
       shinyjs::show(paste0("quick_relabel_", i))
     }
   })
-
+  
   observe({
     yvars <- input$y
     nyvars <- length(yvars)
@@ -2564,7 +3075,7 @@ function(input, output, session) {
       relabels[as.character(yvars[i])] <- newlab
     }
   })
-
+  
   # Don't show the table options when there is no table
   observe({
     shinyjs::toggle("table_options_area", condition = !is.null(values$maindata))
@@ -2602,44 +3113,14 @@ function(input, output, session) {
     ) #sendmail
   }) #sendmymail
   
-  #### TEST TAB ####
-  output$mytabletest = renderDataTable({
+  #### Plot Code tab ------
 
-
-    plotdata <- finalplotdata()
-    validate(need(!is.null(plotdata), "Please select a data set"))
-
-      if (input$colorin == "None"){
-        mu <- plotdata %>%
-          summarise_(.dots = setNames(paste0('mean(',input$x, ')'), "grp.mean"))
-      } else {
-        mu <- plotdata %>%
-          group_by_(input$colorin) %>%
-          summarise_(.dots = setNames(paste0('mean(',input$x, ')'), "grp.mean"))
-      }
-    
-
-    datatable(mu ,
-              extensions = c('ColReorder','Buttons','FixedColumns'),
-              options = list(dom = 'Bfrtip',
-                             searchHighlight = TRUE,
-                             pageLength=-1 ,
-                             lengthMenu = list(c(5, 10, 15, -1), c('5','10', '15', 'All')),
-                             colReorder = list(realtime = TRUE),
-                             buttons =
-                               list('colvis', 'pageLength','print','copy', list(
-                                 extend = 'collection',
-                                 buttons = list(
-                                   list(extend='csv'  ,filename = 'plotdata'),
-                                   list(extend='excel',filename = 'plotdata'),
-                                   list(extend='pdf'  ,filename = 'plotdata')),
-                                 text = 'Download'
-                               )),
-                             scrollX = TRUE,scrollY = 400,
-                             fixedColumns = TRUE
-              ),
-              filter = 'bottom',
-              style = "bootstrap")
+  # Show the source code of the plot
+  output$plotcode <- renderText({
+    get_source_code(plotObject())
   })
   
+  # for testing purposes
+  #values$maindata <- read.csv("data/sample_data.csv", na.strings = c("NA","."))
+
 }
