@@ -375,7 +375,7 @@ fluidPage(
                   3,
                   conditionalPanel(
                     " input.Points!= 'None' ",
-                    sliderInput("pointsizes", "Points Size:", min=0, max=4, value=c(1),step=0.1),
+                    sliderInput("pointsizes", "Points Size:", min=0, max=6, value=c(1),step=0.1),
                     numericInput('pointtypes','Points Type:',16, min = 1, max = 25),
                     conditionalPanel(
                       " input.pointignorecol ",
@@ -849,7 +849,7 @@ fluidPage(
                 tabPanel("Diagnostic Summary",
                          fluidRow(
                            column(8,
-                                  h3("PIDNs who failed the diagnostics"),
+                                  h3("IDs who failed the diagnostics"),
                                   wellPanel(id = "tPanel",style = "overflow-y:scroll; max-height: 600px",
                                             verbatimTextOutput("diag.reg")
                                   ) #wellpanel
@@ -1044,7 +1044,7 @@ fluidPage(
         #### Get Plot Code tab ----
         tabPanel(
           'Plot Code',
-          h5("Plot reproducibility initial support. To reproduce a plot, in the data tab save the plotdata into a csv, read back to R naming it plotdata then copy paste the code below. Some inputs might not be yet supported we will be adding those during the coming weeks."),
+          h5("Plot reproducibility initial support. To reproduce a plot, in the data tab save the plotdata into a csv, read back to R naming it plotdata then copy paste the code below. Some inputs might not be yet supported."),
           verbatimTextOutput("plotcode")
         ), #tabpanel Plotcode
         

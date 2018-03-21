@@ -1328,41 +1328,74 @@ function(input, output, session) {
         
         # ---- Points, lines ----
         
-        # Points
-        if (input$Points=="Points"&input$pointsizein == 'None'&!input$pointignorecol)
-          p <- p + geom_point(,alpha=input$pointstransparency,
-                              shape=input$pointtypes,
-                              size=input$pointsizes)  
-        if (input$Points=="Points"&input$pointsizein != 'None'&!input$pointignorecol)
-          p <- p + geom_point(,alpha=input$pointstransparency,
-                              shape=input$pointtypes)
+        # Points 
+        if (input$Points=="Points"&input$pointsizein == 'None'&input$pointin != 'None'&!input$pointignorecol)
+          p <- p + geom_point(aes_string(shape=input$pointin, fill=input$pointin),alpha=input$pointstransparency,
+                              size=input$pointsizes)  +
+          scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+        if (input$Points=="Points"&input$pointsizein == 'None'&input$pointin == 'None'&!input$pointignorecol)
+          p <- p + geom_point(,alpha=input$pointstransparency,shape=input$pointtypes,size=input$pointsizes)  
         
-        if (input$Points=="Points"&input$pointsizein == 'None'&input$pointignorecol)
-          p <- p + geom_point(,alpha=input$pointstransparency,
-                              shape=input$pointtypes,size=input$pointsizes,
-                              colour=input$colpoint)  
-        if (input$Points=="Points"&input$pointsizein != 'None'&input$pointignorecol)
-          p <- p + geom_point(,alpha=input$pointstransparency,
-                              shape=input$pointtypes,
-                              colour=input$colpoint)
-
+        
+        if (input$Points=="Points"&input$pointsizein != 'None'&input$pointin != 'None'&!input$pointignorecol)
+          p <- p + geom_point(aes_string(shape=input$pointin, fill=input$pointin),alpha=input$pointstransparency) +
+          scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+        if (input$Points=="Points"&input$pointsizein != 'None'&input$pointin == 'None'&!input$pointignorecol)
+          p <- p + geom_point(,alpha=input$pointstransparency,shape=input$pointtypes)
+        
+        
+        
+        if (input$Points=="Points"&input$pointsizein == 'None'&input$pointin != 'None'&input$pointignorecol)
+          p <- p + geom_point(aes_string(shape=input$pointin, fill=input$pointin),alpha=input$pointstransparency,
+                              size=input$pointsizes,colour=input$colpoint) +
+          scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+        if (input$Points=="Points"&input$pointsizein == 'None'&input$pointin == 'None'&input$pointignorecol)
+          p <- p + geom_point(,alpha=input$pointstransparency,shape=input$pointtypes,
+                              size=input$pointsizes,colour=input$colpoint)  
+        
+        
+        if (input$Points=="Points"&input$pointsizein != 'None'&input$pointin != 'None'&input$pointignorecol)
+          p <- p + geom_point(aes_string(shape=input$pointin, fill=input$pointin),alpha=input$pointstransparency,
+                              colour=input$colpoint) +
+          scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+        if (input$Points=="Points"&input$pointsizein != 'None'&input$pointin == 'None'&input$pointignorecol)
+          p <- p + geom_point(,alpha=input$pointstransparency,shape=input$pointtypes,colour=input$colpoint)
+        
+        
         # Jitter
-        if (input$Points=="Jitter"&input$pointsizein == 'None'&!input$pointignorecol)
-          p <- p + geom_jitter(,alpha=input$pointstransparency,
-                               shape=input$pointtypes,
-                               size=input$pointsizes)
-        if (input$Points=="Jitter"&input$pointsizein != 'None'&!input$pointignorecol)
-          p <- p + geom_jitter(,alpha=input$pointstransparency,
-                               shape=input$pointtypes)
+        if (input$Points=="Jitter"&input$pointsizein == 'None'&input$pointin != 'None'&!input$pointignorecol)
+          p <- p + geom_jitter(aes_string(shape=input$pointin, fill=input$pointin),alpha=input$pointstransparency,
+                              size=input$pointsizes) +
+          scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+        if (input$Points=="Jitter"&input$pointsizein == 'None'&input$pointin == 'None'&!input$pointignorecol)
+          p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes,size=input$pointsizes)
         
-        if (input$Points=="Jitter"&input$pointsizein == 'None'&input$pointignorecol)
-          p <- p + geom_jitter(,alpha=input$pointstransparency,
-                               shape=input$pointtypes,size=input$pointsizes,
-                               colour=input$colpoint)
-        if (input$Points=="Jitter"&input$pointsizein != 'None'&input$pointignorecol)
-          p <- p + geom_jitter(,alpha=input$pointstransparency,
-                               shape=input$pointtypes,
-                               colour=input$colpoint)
+        
+        if (input$Points=="Jitter"&input$pointsizein != 'None'&input$pointin != 'None'&!input$pointignorecol)
+          p <- p + geom_jitter(aes_string(shape=input$pointin, fill=input$pointin),alpha=input$pointstransparency) +
+          scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+        if (input$Points=="Jitter"&input$pointsizein != 'None'&input$pointin == 'None'&!input$pointignorecol)
+          p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes)
+        
+        
+        
+        if (input$Points=="Jitter"&input$pointsizein == 'None'&input$pointin != 'None'&input$pointignorecol)
+          p <- p + geom_jitter(aes_string(shape=input$pointin, fill=input$pointin),alpha=input$pointstransparency,
+                               size=input$pointsizes,colour=input$colpoint) +
+          scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+        if (input$Points=="Jitter"&input$pointsizein == 'None'&input$pointin == 'None'&input$pointignorecol)
+          p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes,
+                               size=input$pointsizes,colour=input$colpoint)
+        
+        
+        
+        if (input$Points=="Jitter"&input$pointsizein != 'None'&input$pointin != 'None'&input$pointignorecol)
+          p <- p + geom_jitter(aes_string(shape=input$pointin, fill=input$pointin),alpha=input$pointstransparency,
+                               colour=input$colpoint) +
+          scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+        if (input$Points=="Jitter"&input$pointsizein != 'None'&input$pointin == 'None'&input$pointignorecol)
+          p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes,colour=input$colpoint)
+        
         
         # Lines
         if (input$line=="Lines"&input$pointsizein == 'None'& !input$lineignorecol)
@@ -1394,8 +1427,8 @@ function(input, output, session) {
         
         
         # if (input$pointin != 'None')
-        #   p <- p + geom_point(aes_string(shape = input$pointin),size=input$pointsizes) +
-        #   scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+          # p <- p + geom_point(aes_string(shape = input$pointin),size=input$pointsizes) +
+          # scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
         
         
         #### Boxplot Section START ----
@@ -1462,7 +1495,7 @@ function(input, output, session) {
                 p <- p + geom_smooth(method=input$smoothmethod,
                                      method.args = methodsargument,
                                      size=1.5,se=F,span=spanplot)
-              
+
               if (input$Smooth=="Smooth and SE")
                 p <- p + geom_smooth(method=input$smoothmethod,
                                      method.args = methodsargument,
