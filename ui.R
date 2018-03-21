@@ -160,8 +160,21 @@ fluidPage(
                                        6,18
                                        ,sep=",") )
                            )
+          ),
+          checkboxInput('customyticks', 'Custom Y axis Ticks ?', value = FALSE),
+          conditionalPanel(condition = "input.customyticks" , 
+                           textInput("yaxisbreaks",label ="Y axis major Breaks",
+                                     value = as.character(paste(
+                                       0,12,24
+                                       ,sep=",") )
+                           ),
+                           textInput("yaxisminorbreaks",label ="Y axis minor Breaks",
+                                     value = as.character(paste(
+                                       6,18
+                                       ,sep=",") )
+                           )
           )
-        ),
+        ), #tabPanel
         
         ### Graph options----
         tabPanel(
@@ -338,11 +351,11 @@ fluidPage(
           "Graph Features",
           tabsetPanel(
             id = "graphicaltypes",selected = "Color/Group/Split/Size/Fill Mappings (?)",
-            
+      
             # ---- Plot types -----
             tabPanel(
               "Plot types, Points, Lines (?)",
-              
+              value = "points_lines",
               fluidRow(
                 
                 column (12, hr()),
@@ -367,8 +380,9 @@ fluidPage(
                     conditionalPanel(
                       " input.pointignorecol ",
                       selectInput('colpoint', label ='Points Color', choices=colors(),
-                                  multiple=FALSE, selectize=TRUE, selected="black") 
-                    )
+                                  multiple=FALSE, selectize=TRUE, selected="black")
+                    ),
+                    uiOutput("pointss")
                   )
                 ),
                 column(
@@ -454,7 +468,6 @@ fluidPage(
             # ---- Histograms ----
             tabPanel(
               "Histograms/Density/Bar",
-              value = "histograms_density",
               fluidRow(
                 column (12, h6("A plot of the mapped x variable
                                will be produced when no y variable(s) are selected.This is still limited. Options are to be added as per users requests.")),

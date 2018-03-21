@@ -160,7 +160,7 @@ function(input, output, session) {
   # If an X is selected but no Y is selected, switch to the Histograms tab
   observe({
     if (!is.null(input$x) && is.null(input$y)) {
-      updateTabsetPanel(session, "graphicaltypes", "histograms_density")
+      updateTabsetPanel(session, "graphicaltypes", "points_lines")
     }
   })
   
@@ -1042,6 +1042,24 @@ function(input, output, session) {
               style = "bootstrap")
   })
   
+  # Points, lines, types ----
+  output$pointss <- renderUI({
+    df <-values$maindata
+    validate(       need(!is.null(df), "Please select a data set"))
+    #if (is.null(df)) return(NULL)
+    items=names(df)
+    names(items)=items
+    items= items
+    items= c("None",items, "yvars","yvalues") 
+    if (!is.null(input$pastevarin)&length(input$pastevarin) >1 ){
+      nameofcombinedvariables<- paste(as.character(input$pastevarin),collapse="_",sep="") 
+      items= c(items,nameofcombinedvariables)
+    }
+    selectInput("pointin", "Shape Points By:",items) 
+    
+  })
+  outputOptions(output, "pointss", suspendWhenHidden=FALSE)
+  
   # Color/Group/Split/Size/Fill Mappings ----
   output$colour <- renderUI({
     df <-values$maindata
@@ -1237,6 +1255,7 @@ function(input, output, session) {
 
       if (!is.null(input$y) ){
         
+        # ---- Correlation ----
         if(input$addcorrcoeff){
           if( input$addcorrcoeffignoregroup){
             listvarcor <- c(input$colorin,input$fillin,
@@ -1291,7 +1310,7 @@ function(input, output, session) {
 
         } 
         
-        
+        # ---- Color the points ----
         if (input$colorin != 'None')
           p <- p + aes_string(color=input$colorin)
         if (input$fillin != 'None')
@@ -1305,43 +1324,79 @@ function(input, output, session) {
         if (input$groupin == 'None' & !is.numeric(plotdata[,input$x]) 
             & input$colorin == 'None')
           p <- p + aes(group=1)
+
         
+        # ---- Points, lines ----
+        
+        # Points
         if (input$Points=="Points"&input$pointsizein == 'None'&!input$pointignorecol)
-          p <- p + geom_point(,alpha=input$pointstransparency,shape=input$pointtypes,size=input$pointsizes)  
+          p <- p + geom_point(,alpha=input$pointstransparency,
+                              shape=input$pointtypes,
+                              size=input$pointsizes)  
         if (input$Points=="Points"&input$pointsizein != 'None'&!input$pointignorecol)
-          p <- p + geom_point(,alpha=input$pointstransparency,shape=input$pointtypes)
-        
-        if (input$Points=="Jitter"&input$pointsizein == 'None'&!input$pointignorecol)
-          p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes,size=input$pointsizes)
-        if (input$Points=="Jitter"&input$pointsizein != 'None'&!input$pointignorecol)
-          p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes)
-        
+          p <- p + geom_point(,alpha=input$pointstransparency,
+                              shape=input$pointtypes)
         
         if (input$Points=="Points"&input$pointsizein == 'None'&input$pointignorecol)
-          p <- p + geom_point(,alpha=input$pointstransparency,shape=input$pointtypes,size=input$pointsizes,colour=input$colpoint)  
+          p <- p + geom_point(,alpha=input$pointstransparency,
+                              shape=input$pointtypes,size=input$pointsizes,
+                              colour=input$colpoint)  
         if (input$Points=="Points"&input$pointsizein != 'None'&input$pointignorecol)
-          p <- p + geom_point(,alpha=input$pointstransparency,shape=input$pointtypes,colour=input$colpoint)
+          p <- p + geom_point(,alpha=input$pointstransparency,
+                              shape=input$pointtypes,
+                              colour=input$colpoint)
+
+        # Jitter
+        if (input$Points=="Jitter"&input$pointsizein == 'None'&!input$pointignorecol)
+          p <- p + geom_jitter(,alpha=input$pointstransparency,
+                               shape=input$pointtypes,
+                               size=input$pointsizes)
+        if (input$Points=="Jitter"&input$pointsizein != 'None'&!input$pointignorecol)
+          p <- p + geom_jitter(,alpha=input$pointstransparency,
+                               shape=input$pointtypes)
         
         if (input$Points=="Jitter"&input$pointsizein == 'None'&input$pointignorecol)
-          p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes,size=input$pointsizes,colour=input$colpoint)
+          p <- p + geom_jitter(,alpha=input$pointstransparency,
+                               shape=input$pointtypes,size=input$pointsizes,
+                               colour=input$colpoint)
         if (input$Points=="Jitter"&input$pointsizein != 'None'&input$pointignorecol)
-          p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes,colour=input$colpoint)
+          p <- p + geom_jitter(,alpha=input$pointstransparency,
+                               shape=input$pointtypes,
+                               colour=input$colpoint)
         
-        
-        
+        # Lines
         if (input$line=="Lines"&input$pointsizein == 'None'& !input$lineignorecol)
-          p <- p + geom_line(,size=input$linesize,alpha=input$linestransparency,linetype=input$linetypes)
+          p <- p + geom_line(,size=input$linesize,
+                             alpha=input$linestransparency,
+                             linetype=input$linetypes)
         if (input$line=="Lines"&input$pointsizein != 'None'& !input$lineignorecol& !input$lineignoresize)
-          p <- p + geom_line(,alpha=input$linestransparency,linetype=input$linetypes)
+          p <- p + geom_line(,alpha=input$linestransparency,
+                             linetype=input$linetypes)
         if (input$line=="Lines"&input$pointsizein != 'None'& !input$lineignorecol& input$lineignoresize)
-          p <- p + geom_line(size=input$linesize,alpha=input$linestransparency,linetype=input$linetypes)
+          p <- p + geom_line(size=input$linesize,
+                             alpha=input$linestransparency,
+                             linetype=input$linetypes)
         
         if (input$line=="Lines"&input$pointsizein == 'None'&input$lineignorecol)
-          p <- p + geom_line(,size=input$linesize,alpha=input$linestransparency,linetype=input$linetypes,colour=input$colline)
+          p <- p + geom_line(,size=input$linesize,
+                             alpha=input$linestransparency,
+                             linetype=input$linetypes,
+                             colour=input$colline)
         if (input$line=="Lines"&input$pointsizein != 'None'& input$lineignorecol& !input$lineignoresize)
-          p <- p + geom_line(,alpha=input$linestransparency,linetype=input$linetypes,colour=input$colline)
+          p <- p + geom_line(,alpha=input$linestransparency,
+                             linetype=input$linetypes,
+                             colour=input$colline)
         if (input$line=="Lines"&input$pointsizein != 'None'& input$lineignorecol & input$lineignoresize )
-          p <- p + geom_line(size=input$linesize,alpha=input$linestransparency,linetype=input$linetypes,colour=input$colline)
+          p <- p + geom_line(size=input$linesize,
+                             alpha=input$linestransparency,
+                             linetype=input$linetypes,
+                             colour=input$colline)
+        
+        
+        # if (input$pointin != 'None')
+        #   p <- p + geom_point(aes_string(shape = input$pointin),size=input$pointsizes) +
+        #   scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+        
         
         #### Boxplot Section START ----
         
@@ -2582,8 +2637,12 @@ function(input, output, session) {
                    label=input$targettext, col="blue", hjust=0, vjust=1,size=3)
       }
       
-      p <- p + theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank(),
-                     element_line(size = 1,colour = "black"))
+      p <- p + theme(axis.line = element_line(colour = "black"),
+                     panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(),
+                     panel.border = element_blank(),
+                     panel.background = element_blank(),
+                     text = element_text(family = "serif", face = "bold"))
       
       #p <- ggplotly(p)
       
