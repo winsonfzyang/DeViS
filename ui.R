@@ -59,19 +59,11 @@ fluidPage(
               ))
             ),
             # ---- Combine two variables ----
-<<<<<<< HEAD
-            # tabPanel("Combine Two Variables",
-            #          h6("Combined variables can be used for colour, fill, group, size and facets. They cannot be used as X or Y variables."),
-            #          
-            #          uiOutput("pastevar")
-            # ),
-=======
             tabPanel("Combine Two Variables",
                      h6("Combined variables can be used for colour, fill, group, size and facets. They cannot be used as X or Y variables."),
                      
                      uiOutput("pastevar")
             ),
->>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
             
             # ---- Simple rounding ----
             tabPanel(
@@ -79,19 +71,6 @@ fluidPage(
               uiOutput("roundvar"),
               numericInput("rounddigits",label = "N Digits",value = 0,min=0,max=10) 
             ),
-<<<<<<< HEAD
-            # ---- One row -----
-            # tabPanel(
-            #   "One Row by ID(s)",
-            #   checkboxInput('filtertoonerowbyid', 'Filter to One Row by ID(s)?', value = FALSE),
-            #   conditionalPanel(
-            #     condition = "input.filtertoonerowbyid" ,
-            #     uiOutput("onerowidgroup")
-            #   )
-            #   
-            # ),
-=======
->>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
             # ---- Reorder variables ----
             tabPanel(
               "Reorder Variables", 
@@ -127,7 +106,6 @@ fluidPage(
               )
               
             )
-            
           ),
           hr()
         ), # tabpanel Inputs
@@ -376,11 +354,7 @@ fluidPage(
       
             # ---- Plot types -----
             tabPanel(
-<<<<<<< HEAD
-              "Plot types, Points, Lines",
-=======
               "Plot types, Points, Lines (?)",
->>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
               value = "points_lines",
               fluidRow(
                 
@@ -444,11 +418,7 @@ fluidPage(
             
             # ---- Color/Group ----
             tabPanel(
-<<<<<<< HEAD
-              "Color/Group/Split/Size/Fill Mappings",
-=======
               "Color/Group/Split/Size/Fill Mappings (?)",
->>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
               fluidRow(
                 column (12, hr()),
                 column (3, uiOutput("colour"),uiOutput("group")),
@@ -464,14 +434,8 @@ fluidPage(
             tabPanel(
               "Boxplots",
               fluidRow(
-<<<<<<< HEAD
-                # column (12, 
-                #         h6("Limited Boxplots support. Options are to be added as per users requests.")),
-                 
-=======
                 column (12, h6("Limited Boxplots support. Options are to be added as per users requests.")),
                 
->>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
                 column (
                   4,
                   checkboxInput('boxplotaddition', 'Add a Boxplot ? (makes sense if x variable is categorical and
@@ -497,34 +461,6 @@ fluidPage(
                   sliderInput("boxplotalpha", "Boxplot Transparency:", min=0, max=1, value=c(0.2),step=0.01)
                   
                 )
-<<<<<<< HEAD
-                
-              )#fluidrow 
-              
-                ),
-            # ---- Histograms ----
-            tabPanel(
-              "Histograms/Density/Bar",
-              fluidRow(
-                column (12, h6("A plot of the mapped x variable
-                               will be produced when no y variable(s) are selected.This is still limited. Options are to be added as per users requests.")),
-                column (
-                  6,
-                  column(
-                    6,
-                    checkboxInput('histogramaddition', 'Add a Histogram ?',value = FALSE),
-                    checkboxInput('mlineaddition', 'Add a Mean line ?',value = FALSE)
-                    ),
-                  column(
-                    6,
-                    checkboxInput('densityaddition', 'Add a Density Curve ?',value = TRUE)
-                    ),
-                  sliderInput("n_bins",
-                              "Number of bins:",
-                              min = 1,
-                              max = 100,
-                              value = 30)
-=======
                 
               )#fluidrow 
               
@@ -544,7 +480,6 @@ fluidPage(
                 column (
                   3,
                   checkboxInput('densityaddition', 'Add a Density Curve ?',value = TRUE)
->>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
                 ),
                 
                 column (
@@ -609,11 +544,7 @@ fluidPage(
             # ),
             # ---- regression ----
             tabPanel(
-<<<<<<< HEAD
-              "Smooth/Linear/Logistic Regressions",
-=======
               "Smooth/Linear/Logistic Regressions (?)",
->>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
               
               fluidRow(
                 column(12,hr()),
@@ -799,11 +730,7 @@ fluidPage(
             # ), #tabpanel km
             # ---- Correlation section ----
             tabPanel(
-<<<<<<< HEAD
-              "Correlation Coefficient",
-=======
               "Correlation Coefficient (?)",
->>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
               fluidRow(
                 column(12,hr()),
                 checkboxInput('addcorrcoeff',"Add Correlation Coefficient to the plot ?"),
@@ -1079,10 +1006,6 @@ fluidPage(
                             div(id="quick_relabel_placeholder"),
                             uiOutput("dstats_col_extra"),
                             uiOutput("filpthelevels")
-<<<<<<< HEAD
-                            # downloadButton(outputId = "downloader",label = "Download Table")
-=======
->>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
                      ),
                      column(3,
                             div(id="quick_reorder_placeholder")
