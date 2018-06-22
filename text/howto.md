@@ -1,5 +1,6 @@
 ﻿Please read the How to to make sure you are using the app as intented.
 Contact me @ winsonfz.yang@gmail.com for feedback or use the link to file bugs/features/pull requests!
+
 1. Upload your data file in CSV vor XLS format. R default options for will apply except for missing values where both (NA) and dot (.) are treated as missing. If your data has columns with other non-numeric missing value codes then they will be treated as factors.
 
 2. The UI is dynamic and changes depending on your choices of options, x ,y, filter, group and so on.
@@ -21,16 +22,16 @@ Contact me @ winsonfz.yang@gmail.com for feedback or use the link to file bugs/f
     + In the **Reorder Variables** sub-tab:  
     There is a group of options to allow you to reorder a categorical variable is several ways. ***Reorder This Variable:*** allows you to select and reorder a categorical variable ***By the:***  `Median`,`Mean`,`Minimum` or `Maximum` of ***Of this Variable:*** where you pick a numerical variable of your choice the default is to use the `Median` of `yvalues`. You can also check the ***Reverse Order ?*** box to have the order inverted. The ***Custom Reorder this variable*** will create an input field with unique values of the selected variable and then you can drag and drop the values to the order of your choice. Finally the  ***Change labels of this variable:*** is an additional place where you can change the names of the levels of a character variable like the one holding the names of the selected y variables `yvars` which is handy if you want to change the names in the facet labels.  
 
-7.The **Graph Options** tab allows the user to manipulate the overall appearance of the graph, and also for the user to input the variables of interests.  
+7. The **Graph Layout** tab allows the user to manipulate the overall appearance of the graph, and also for the user to input the variables of interests.  
     + The ***X/Y Axes/ Log/Labels*** sub-tab allows users to input their x and y variables, and also relabel them. Furthermore there is also an option to add covariates which will be used to created adjusted y variables in the graph and the regression model  
 
-8. The **Types of Graphs** allows users to control which features and layers to include.  
-    + The ***Plot types, Points, Lines (?)*** sub-tab has options for `Points`, `Jitter` and `Lines` (optionally grouped) and with the user ability to control shapes, line types, transparency, and overriding mapped colors or sizes.  
-    + The ***Color/Group/Split/Size/Fill Mappings (?)*** sub-tab has options for mapping `Color`, `Group` and `Split` (faceting in ggplot jargon),`Color` and `Fill`. Splits can be done up to two levels by column and/or by row. The user is encouraged to experiment to get familiar with the various options and capabilities.  
-    + The ***Boxplots*** sub-tab brings limited boxplots support. Carefully choose grouping expecially when the x axis variable is continuous, you can change the **Group By:*** variable in the ***Color/Group/Split/Size/Fill Mappings (?)*** to better reflect your needs.  
+8. The **Graph Features** allows users to control which features and layers to include.  
+    + The ***Plot types, Points, Lines*** sub-tab has options for `Points`, `Jitter` and `Lines` (optionally grouped) and with the user ability to control shapes, line types, transparency, and overriding mapped colors or sizes.  
+    + The ***Color/Group/Split/Size/Fill Mappings*** sub-tab has options for mapping `Color`, `Group` and `Split` (faceting in ggplot jargon),`Color` and `Fill`. Splits can be done up to two levels by column and/or by row. The user is encouraged to experiment to get familiar with the various options and capabilities.  
+    + The ***Boxplots*** sub-tab brings limited boxplots support. Carefully choose grouping expecially when the x axis variable is continuous, you can change the **Group By:*** variable in the ***Color/Group/Split/Size/Fill Mappings*** to better reflect your needs.  
     + The ***Histogram/Density*** sub-tab is relevant when no y variables are selected and when the x variable is continuous. It allows you to plot density and or histogram. You can also plot a mean line across the histogram, whether separated by groups or overall mean.
-    + To include a trend line experiment with ***Smooth/Linear/Logistic Regressions (?)***. Make sure that data is compatible with the smoothing method used for example the ***Smoothing Method*** `logistic` expects a numerical 0/1 variable.  
-    + The ***Correlation Coefficient (?)*** sub-tab allows you to add the correlation coefficient into the plot by clicking the `Add correlation coefficient to the plot` check box.  
+    + To include a trend line experiment with ***Smooth/Linear/Logistic Regressions***. Make sure that data is compatible with the smoothing method used for example the ***Smoothing Method*** `logistic` expects a numerical 0/1 variable.  
+    + The ***Correlation Coefficient*** sub-tab allows you to add the correlation coefficient into the plot by clicking the `Add correlation coefficient to the plot` check box.  
 
 9. WIthin the **Scatter/Regression Plot** tab contains three sub-tabs. 
     + The ***Plot*** sub-tab contains the main output of the graph. You have the freedom to choose whether you want to view the plot as **ggplot** or **plotly**. You also have the option to save the plot for exporting wit the **Save plot** star button.
@@ -41,7 +42,7 @@ Contact me @ winsonfz.yang@gmail.com for feedback or use the link to file bugs/f
 
 11. The **Descriptive Stats** tab added the ability to view the descriptives of your variables by group. The table output is also made almost-ready for publication. Some touch up is still needed to be done if you wish to utilize this table.
 
-13. The **E-mail** tab allows you to report bugs, send a feedback, and request for new features or updates. You can choose to uplaod an attachment to show what errors you have encountered. Click `send mail` to send the e-mail after completing the form.
+12. The **E-mail** tab allows you to report bugs, send a feedback, and request for new features or updates. You can choose to uplaod an attachment to show what errors you have encountered. Click `send mail` to send the e-mail after completing the form.
 
 
 Contact me @ winsonfz.yang@gmail.com for feedback or use the link to file bugs/features/pull requests!

@@ -55,7 +55,7 @@ names(diagnosticlist)[5] = 'DFFITS'
 diagnosticlist[[6]] = list(sqrt(vif(dataset.model)) > 2) # VIF Tolerance outliers
 names(diagnosticlist)[6] = 'VIF'
 
-# Print PIDN with diagnostics issues
+# Print ID with diagnostics issues
 print(diagnosticlist)
 
 }

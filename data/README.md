@@ -1,46 +1,35 @@
 # The California Test Score Data Set
 
-The sample dataset used in DEViS comes from the California Test Score Dataset.
-It can be obtained from the California Department of Education at http://www.cde.ca.gov.
+The sample dataset used in DEViS comes is a simulated neuroimaging data of healthy older adults and patients neurodegenerative diseases. Data in this excel spreadsheet is ***NOT REAL*** data.
 
-Description: a cross-section from 1998-1999
+Description: Neurodegenerative disease data
 
-number of observations : 420
-observation : schools
-country : United States
+number of observations : 200
 
 Format: A dataframe containing :
 
-distcod: district code
+ID: Identification number
 
-county: county
+Dx: Diagnosis
 
-district: district
+Age: Age
 
-grspan: grade span of district
+Sex: Sex
 
-enrltot: total enrollment
+Education: Education (in years)
 
-teachers: number of teachers
+MMSEtot: Mini-mental state examination score
 
-calwpct: percent qualifying for CalWorks
+CDRTot: Clinical Dementia Rating score
 
-mealpct: percent qualifying for reduced-price lunch
+GDSTot: Geriatric depression scale score
 
-computer: number of computers
+ts1_tot: TASIT-EET Score for emotion reading
 
-testscr: average test score (read.scr+math.scr)/2
+MCDMNAndrews: Mean resting-state network connectivity of the Default Mode Network
 
-compstu: computer per student
+MCSMN:Mean resting-state network connectivity of the Sensorimotor Network
 
-expnstu: expenditure per student
+MCSAN:Mean resting-state network connectivity of the Semantic Appraisal Network
 
-str: student teacher ratio
-
-avginc: district average income
-
-elpct: percent of English learners
-
-readscr: average reading score
-
-mathscr: average math score
+MCSN: Mean resting-state network connectivity of the Salience Network

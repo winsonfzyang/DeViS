@@ -20,7 +20,7 @@ suppressMessages ({
                  markdown,
                  rlang,
                  lazyeval)
-
+  
   if (!suppressWarnings(require(ggkm, quietly=TRUE))) {
     devtools::install_github("sachsmc/ggkm")
     library(ggkm)
@@ -33,6 +33,9 @@ suppressMessages ({
 
 })
 
+source("functions\\diagnose_regression.R")
+source("functions\\RegressionPlots.R")
+source("functions\\sourceable.R") # Not going to show source code for plot
 
 options(shiny.maxRequestSize=250*1024^2) 
 #options(shiny.reactlog=TRUE) 
@@ -52,11 +55,6 @@ give.n <- function(x){
   return(c(y = min(x)*1,  label = length(x))) 
 }
 
-source("functions\\diagnose_regression.R")
-source("functions\\RegressionPlots.R")
-source("functions\\sourceable.R") # Not going to show source code for plot
-
-
 tableau10 <- c("#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD",
                "#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF")
 
@@ -69,8 +67,6 @@ cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
                "#0072B2", "#D55E00", "#CC79A7")
 cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", 
                 "#0072B2", "#D55E00", "#CC79A7")
-
-
 
 # All stats that can be displayed for continuous variables
 allstats <- c("N",
@@ -89,4 +85,3 @@ allstats <- c("N",
               "Median [Min, Max]",
               "Median [IQR]",
               "Geo. Mean (Geo. CV%)")
-
