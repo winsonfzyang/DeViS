@@ -932,6 +932,7 @@ function(input, output, session) {
     df
   })
   
+<<<<<<< HEAD
   # output$onerowidgroup <- renderUI({
   #   df <-values$maindata
   #   validate(       need(!is.null(df), "Please select a data set"))
@@ -953,10 +954,34 @@ function(input, output, session) {
   #   
   # })
   # outputOptions(output, "onerowidgroup", suspendWhenHidden=FALSE)
+=======
+  output$onerowidgroup <- renderUI({
+    df <-values$maindata
+    validate(       need(!is.null(df), "Please select a data set"))
+    items=names(df)
+    names(items)=items
+    items= items 
+    items= c(items, "yvars","yvalues") 
+    if (!is.null(input$pastevarin)&length(input$pastevarin) >1 ){
+      nameofcombinedvariables<- paste(as.character(input$pastevarin),collapse="_",sep="") 
+      items= c(items,nameofcombinedvariables)
+    }
+    selectizeInput("onerowidgroupin", "ID(s):", choices = items,multiple=TRUE,
+                   options = list(
+                     placeholder = 'Please select at least one variable that is not in y variable(s)',
+                     onInitialize = I('function() { this.setValue(""); }'),
+                     plugins = list('remove_button')
+                   )
+    )
+    
+  })
+  outputOptions(output, "onerowidgroup", suspendWhenHidden=FALSE)
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
   
   filterdata7  <- reactive({
     df <- recodedata5()
     validate(       need(!is.null(df), "Please select a data set"))
+<<<<<<< HEAD
     # if(input$filtertoonerowbyid && !is.null(input$onerowidgroupin) && length(input$onerowidgroupin) >0 ){
     # 
     #     #dots <- lapply(c(as.vector(input$onerowidgroupin),"yvars" ), as.symbol)
@@ -966,6 +991,17 @@ function(input, output, session) {
     #     df<- df %>% filter(row_number()==1 ) %>%
     #       ungroup()
     # }
+=======
+    if(input$filtertoonerowbyid && !is.null(input$onerowidgroupin) && length(input$onerowidgroupin) >0 ){
+    
+        #dots <- lapply(c(as.vector(input$onerowidgroupin),"yvars" ), as.symbol)
+        vars<- c(as.vector(input$onerowidgroupin),"yvars" )
+        df <-   df %>%
+        group_by(!!!syms(vars))
+        df<- df %>% filter(row_number()==1 ) %>%
+          ungroup()
+    }
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
     
     as.data.frame(df)
   })
@@ -1325,9 +1361,15 @@ function(input, output, session) {
             & input$colorin == 'None')
           p <- p + aes(group=1)
 
+<<<<<<< HEAD
         
         # ---- Points, lines ----
         
+=======
+        
+        # ---- Points, lines ----
+        
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
         # Points 
         if (input$Points=="Points"&input$pointsizein == 'None'&input$pointin != 'None'&!input$pointignorecol)
           p <- p + geom_point(aes_string(shape=input$pointin, fill=input$pointin),alpha=input$pointstransparency,
@@ -1386,7 +1428,10 @@ function(input, output, session) {
         if (input$Points=="Jitter"&input$pointsizein == 'None'&input$pointin == 'None'&input$pointignorecol)
           p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes,
                                size=input$pointsizes,colour=input$colpoint)
+<<<<<<< HEAD
         
+=======
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
         
         
         if (input$Points=="Jitter"&input$pointsizein != 'None'&input$pointin != 'None'&input$pointignorecol)
@@ -1397,6 +1442,17 @@ function(input, output, session) {
           p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes,colour=input$colpoint)
         
         
+<<<<<<< HEAD
+=======
+        if (input$Points=="Jitter"&input$pointsizein != 'None'&input$pointin != 'None'&input$pointignorecol)
+          p <- p + geom_jitter(aes_string(shape=input$pointin, fill=input$pointin),alpha=input$pointstransparency,
+                               colour=input$colpoint) +
+          scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
+        if (input$Points=="Jitter"&input$pointsizein != 'None'&input$pointin == 'None'&input$pointignorecol)
+          p <- p + geom_jitter(,alpha=input$pointstransparency,shape=input$pointtypes,colour=input$colpoint)
+        
+        
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
         # Lines
         if (input$line=="Lines"&input$pointsizein == 'None'& !input$lineignorecol)
           p <- p + geom_line(,size=input$linesize,
@@ -1424,8 +1480,13 @@ function(input, output, session) {
                              alpha=input$linestransparency,
                              linetype=input$linetypes,
                              colour=input$colline)
+<<<<<<< HEAD
         
         
+=======
+        
+        
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
         # if (input$pointin != 'None')
           # p <- p + geom_point(aes_string(shape = input$pointin),size=input$pointsizes) +
           # scale_shape_manual(values=rep(c(21,22,23,24,25), times = 10))
@@ -1989,6 +2050,260 @@ function(input, output, session) {
         #   }
         # }
         # 
+<<<<<<< HEAD
+=======
+        # ###### Median PI section  START ----
+        # if (!input$medianignoregroup) {
+        #   
+        #   if (!input$medianignorecol) {
+        #     
+        #     if (input$Median=="Median") {
+        #       if(input$medianlines&input$pointsizein != 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line")
+        #       
+        #       if(input$medianlines&input$pointsizein == 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",size=input$medianlinesize)
+        #       
+        #       
+        #       if(input$medianpoints)           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "point")
+        #       
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein == 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI) ,size=input$medianlinesize,alpha=input$PItransparency,col=NA)+ 
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI) ,size=input$medianlinesize,alpha=0)
+        #       
+        #       if ( input$sepguides )
+        #         p <-   p + 
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #       
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein != 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI), alpha=input$PItransparency,col=NA)+
+        #         stat_sum_df("median_hilow", geom = "smooth"  ,fun.args=list(conf.int=input$PI),alpha=0)
+        #       
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #       
+        #     }
+        #     
+        #     if (input$Median!="None" & input$medianvalues )  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = median.n,geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold",
+        #                      show.legend=FALSE,size=6)}
+        #     if (input$Median!="None" & input$medianN)  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = give.n, geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold", 
+        #                      show.legend=FALSE,size=6)      
+        #     }  
+        #   }
+        #   
+        #   
+        #   
+        #   if (input$medianignorecol) {
+        #     mediancol <- input$colmedian
+        #     if (input$Median=="Median") {
+        #       if(input$medianlines&input$pointsizein != 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",col=mediancol)
+        #       
+        #       if(input$medianlines&input$pointsizein == 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",col=mediancol,size=input$medianlinesize)
+        #       
+        #       if(input$medianpoints)           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "point",col=mediancol)
+        #       
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein == 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon", fun.args=list(conf.int=input$PI), alpha=input$PItransparency,col=NA)+
+        #         stat_sum_df("median_hilow", geom = "smooth", fun.args=list(conf.int=input$PI), size=input$medianlinesize,col=mediancol,alpha=0)
+        #       
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     if (input$Median=="Median/PI"&input$pointsizein != 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI),alpha=input$PItransparency,col=NA)+
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI),col=mediancol,
+        #                     alpha=0)          
+        #       
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     if (input$Median!="None" & input$medianvalues )  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = median.n,geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold",colour=mediancol,
+        #                      show.legend=FALSE,size=6)}
+        #     if (input$Median!="None" & input$medianN)  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = give.n, geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold", colour=mediancol,
+        #                      show.legend=FALSE,size=6)      
+        #     }       
+        #     
+        #   }
+        # }
+        # 
+        # if (input$medianignoregroup) {
+        #   if (!input$medianignorecol) {
+        #     if (input$Median=="Median") {
+        #       if(input$medianlines&input$pointsizein != 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",aes(group=NULL))
+        #       if(input$medianlines&input$pointsizein == 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",aes(group=NULL),size=input$medianlinesize)
+        #       
+        #       if(input$medianpoints)           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "point",aes(group=NULL))
+        #       
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein == 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI),aes(group=NULL),alpha=input$PItransparency,col=NA)+ 
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI),aes(group=NULL),size=input$medianlinesize,alpha=0)   
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein != 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI),aes(group=NULL),alpha=input$PItransparency,col=NA)+ 
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI),aes(group=NULL),alpha=0)
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     if (input$Median!="None" & input$medianvalues )  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = median.n, aes(group=NULL),geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold",fill="white",
+        #                      show.legend=FALSE,
+        #                      size=6)}
+        #     if (input$Median!="None" & input$medianN)  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = give.n, aes(group=NULL), geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold", fill="white",
+        #                      show.legend=FALSE,size=6)      
+        #     }
+        #     
+        #     
+        #   }
+        #   
+        #   
+        #   if (input$medianignorecol) {
+        #     mediancol <- input$colmedian
+        #     if (input$Median=="Median") {
+        #       if(input$medianlines&input$pointsizein != 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",col=mediancol,aes(group=NULL))
+        #       if(input$medianlines&input$pointsizein == 'None')           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "line",col=mediancol,aes(group=NULL),size=input$medianlinesize)
+        #       
+        #       if(input$medianpoints)           
+        #         p <- p + 
+        #           stat_sum_single(median, geom = "point",col=mediancol,aes(group=NULL))
+        #       
+        #     }
+        #     
+        #     if (input$Median=="Median/PI"&input$pointsizein == 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI),aes(group=NULL),alpha=input$PItransparency,col=NA)+ 
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI),col=mediancol,aes(group=NULL),size=input$medianlinesize,alpha=0)
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     if (input$Median=="Median/PI"&input$pointsizein != 'None'){
+        #       p <- p + 
+        #         stat_sum_df("median_hilow", geom = "ribbon",fun.args=list(conf.int=input$PI),aes(group=NULL),alpha=input$PItransparency,col=NA)+ 
+        #         stat_sum_df("median_hilow", geom = "smooth",fun.args=list(conf.int=input$PI),col=mediancol,aes(group=NULL),alpha=0)
+        #       
+        #       
+        #       
+        #       if ( input$sepguides )
+        #         p <-   p +
+        #           guides(
+        #             color = guide_legend(paste("Median"),
+        #                                  override.aes = list(shape =NA,fill=NA)),
+        #             fill  = guide_legend(paste( 100*input$PI,"% prediction interval"),
+        #                                  override.aes = list(shape =NA ,linetype =0,alpha=0.5 )
+        #             ) )
+        #     }
+        #     
+        #     
+        #     if (input$Median!="None" & input$medianvalues )  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = median.n, aes(group=NULL),geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold",colour=mediancol,
+        #                      show.legend=FALSE,size=6)}
+        #     if (input$Median!="None" & input$medianN)  {
+        #       p <-   p   +
+        #         stat_summary(fun.data = give.n, aes(group=NULL), geom = "label_repel",alpha=0.4,
+        #                      fun.y = median, fontface = "bold", colour=mediancol,
+        #                      show.legend=FALSE,size=6)      
+        #     }
+        #     
+        #   }
+        # }
+        # 
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
         # ###### RQSS SECTION START  ----
         # if (!input$ignoregroupqr) {
         #   if (!input$ignorecolqr) {
@@ -2275,7 +2590,10 @@ function(input, output, session) {
           }
           if ( input$densityaddition){
             p <- p+
+<<<<<<< HEAD
               aes(y=..density..)+
+=======
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
               geom_density(alpha=0.1)
             
           }
@@ -2302,7 +2620,10 @@ function(input, output, session) {
           }
         }
         
+<<<<<<< HEAD
         
+=======
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
         ### BAR PLOT ----
         if(!is.numeric(plotdata[,input$x]) ){
           p <- sourceable(ggplot(plotdata, aes_string(x=input$x)))
@@ -2429,6 +2750,7 @@ function(input, output, session) {
       if (input$logx&  is.numeric(plotdata[,input$x])& !input$logxformat)
         p <- p + scale_x_log10() 
       
+<<<<<<< HEAD
       
       if (input$scientificy & is.numeric(plotdata[,"yvalues"]) )
         p <- p  + 
@@ -2446,6 +2768,25 @@ function(input, output, session) {
         p <- p  + 
         scale_x_continuous(labels=percent) 
       
+=======
+      
+      if (input$scientificy & is.numeric(plotdata[,"yvalues"]) )
+        p <- p  + 
+        scale_y_continuous(labels=comma )
+      
+      if (input$scientificx  &  is.numeric(plotdata[,input$x]) )
+        p <- p  + 
+        scale_x_continuous(labels=comma) 
+      
+      if (input$percenty && is.numeric(plotdata[,"yvalues"])&& !input$logy)
+        p <- p  + 
+        scale_y_continuous(labels=percent )
+      
+      if (input$percentx && is.numeric(plotdata[,input$x]  )&& !input$logx)
+        p <- p  + 
+        scale_x_continuous(labels=percent) 
+      
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
       if (!input$percentx && input$customxticks) {
         p <- p  + 
           scale_x_continuous(breaks=as.numeric(unique(unlist (strsplit(input$xaxisbreaks, ","))) ),
@@ -2674,10 +3015,17 @@ function(input, output, session) {
                    label=input$targettext, col="blue", hjust=0, vjust=1,size=3)
       }
       
+<<<<<<< HEAD
       p <- p + theme(axis.line = element_line(colour = "black", size = 1),
                      panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(),
                      # panel.border = element_blank(),
+=======
+      p <- p + theme(axis.line = element_line(colour = "black"),
+                     panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(),
+                     panel.border = element_blank(),
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
                      panel.background = element_blank(),
                      text = element_text(family = "serif", face = "bold"))
       
@@ -3129,6 +3477,7 @@ function(input, output, session) {
     HTML(dstatsTable())
   })
   
+<<<<<<< HEAD
   
   # Download data TEST
   # output$downloader <- 
@@ -3138,6 +3487,8 @@ function(input, output, session) {
   
   
   
+=======
+>>>>>>> 5c0b6df0b69a4ecd42e985a5703ac752ab01d5fe
   #observe({
   #  df <- values$maindata
   #  if (is.null(df)) return(NULL)
