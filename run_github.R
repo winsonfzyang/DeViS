@@ -4,5 +4,5 @@ if (!suppressWarnings(require(shiny, quietly=TRUE))) {
   library(shiny)
 }
 
-# Easiest way is to use runGitHub
+# Run DEViS using runGitHub
 runGitHub("DEViS", "winsonfzyang")

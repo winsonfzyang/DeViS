@@ -4,6 +4,23 @@ DEViS stands for Data Exploration Visualization and Statistics. DEViS enables yo
 
 **Export Plots**. Once a plot is saved in the **Scatter/Regression Plot** tab by providing a name and hitting the **Save plot** star button it will become available for exporting. You can export in portrait, landscape and multiple plots per page.  
 
+### Installation and running DEViS
+You can download DEViS using the Clone or download button. You do not have to install RStudio to run DEViS. You can install R (link to download <a href="https://cran.r-project.org/">here</a>) and use it to run DEViS. Once you have installed R, open it an type the code below, depending on where you have downloaded DEViS into.
+
+```
+Rscript <directory>/run_github.R
+```
+
+If you are running on Linux/Mac, you can call DEViS from the terminal using:
+```
+Rscript /home/YOURNAME/DEViS/run_github.R
+```
+
+If you are using Windows to run DEViS, you would have to find where the Rscript.exe file is located at.
+```
+"C:\Program Files\R\R-3.4.3\bin\Rscript.exe" "C:\Users\YOURNAME\DEViS\run_github.R"
+```
+
 
 ### CSV and EXCEL Data Input
 
@@ -24,14 +41,14 @@ else
 
 ### Send E-mail
 * There is a tab that allows users to send an e-mail to the developer to report bugs, request updates or new features, and provide feedback
-* The E-mail tab is currently not working. If you want to report bugs, request updates or new features, and provide feedback, please send an e-mail to **winsonfz.yang@gmail.com**.
+* The E-mail tab is currently not working. If you want to report bugs, request updates or new features, and provide feedback, please send an e-mail to winsonfz.yang@gmail.com.
 
 ### Plotly output
 * Option to view your graph as an interactive plotly graph instead of ggplot.
 * Plotly graphs allow you to zoom, view graphs by subset, or view individual data points without having to filter your data. However, the statistics behind the graph still depends on the data input you feed, not by the interactive options in the plotly graph.
 
 ### Summary/Regression functions
-There are a few regression options for you to choose to run your analyses. DEViS will also return the statistics in a separate tab. If you want to see more types of regression and options, please send an e-mail to **winsonfz.yang@gmail.com**.
+There are a few regression options for you to choose to run your analyses. DEViS will also return the statistics in a separate tab. If you want to see more types of regression and options, please send an e-mail to winsonfz.yang@gmail.com.
 * Smooth/Linear/Logistic Regressions
 * Regression diagnostics
 * Regression model summary statistics

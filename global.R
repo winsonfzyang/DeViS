@@ -1,11 +1,11 @@
 suppressMessages ({
-  
+
   if (!require("pacman")) install.packages("pacman")
   pacman::p_load(devtools,
                  shiny,
                  shinyjs,   # Shiny json
                  readxl,    # Read excel files
-                 ggplot2,   # plotting 
+                 ggplot2,   # plotting
                  plotly,    # interactive plots
                  ggrepel,   # Text for ggplot
                  scales,    # Color stuff
@@ -16,35 +16,30 @@ suppressMessages ({
                  lm.beta,   # Regression stuff
                  lmSupport, # Regression stuff
                  sendmailR, # Send E-mail
-                 Hmisc,  
+                 Hmisc,
                  quantreg,
                  markdown,
                  rlang,
                  lazyeval)
-  
+
   if (!suppressWarnings(require(ggkm, quietly=TRUE))) {
     devtools::install_github("sachsmc/ggkm")
     library(ggkm)
   }
-  
+
   if (!suppressWarnings(require(table1, quietly=TRUE))) {
       devtools::install_github("benjaminrich/table1")
       library(table1)
   }
   
-  if (!suppressWarnings(require(ggrepel, quietly=TRUE))) {
-    devtools::install_github("slowkow/ggrepel@0.6.6")
-    library(ggrepel)
-  }
-
 })
 
 source("functions\\diagnose_regression.R")
 source("functions\\RegressionPlots.R")
 source("functions\\sourceable.R") # Not going to show source code for plot
 
-options(shiny.maxRequestSize=250*1024^2) 
-#options(shiny.reactlog=TRUE) 
+options(shiny.maxRequestSize=250*1024^2)
+#options(shiny.reactlog=TRUE)
 
 stat_sum_df <- function(fun, geom="point", ...) {
   stat_summary(fun.data=fun,  geom=geom,  ...)
@@ -55,10 +50,10 @@ stat_sum_single <- function(fun, geom="point", ...) {
 
 median.n <- function(x){
   return(c(y = ifelse(median(x)<0,median(x),median(x)),
-           label = round(median(x),2))) 
+           label = round(median(x),2)))
 }
 give.n <- function(x){
-  return(c(y = min(x)*1,  label = length(x))) 
+  return(c(y = min(x)*1,  label = length(x)))
 }
 
 tableau10 <- c("#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD",
@@ -71,7 +66,7 @@ tableau20 <- c("#1F77B4","#AEC7E8", "#FF7F0E","#FFBB78"  ,"#2CA02C",
 
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
                "#0072B2", "#D55E00", "#CC79A7")
-cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", 
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
                 "#0072B2", "#D55E00", "#CC79A7")
 
 # All stats that can be displayed for continuous variables
