@@ -55,7 +55,7 @@ Contact me @ winsonfz.yang@gmail.com for feedback or use the link to file bugs/f
 
 14. The **Plot Code** tab returns the R-code for the plot for reproducibility. However, some inputs are still not yet supported.
 
-14. The **E-mail** tab allows you to report bugs, send a feedback, and request for new features or updates. You can choose to uplaod an attachment to show what errors you have encountered. Click `send mail` to send the e-mail after completing the form. Currently this feature is not working, so if you have want to report bugs, send a feedback, and request for new features or updates, please send an e-mail to winsonfz.yang@gmail.com.
+15. The **E-mail** tab allows you to report bugs, send a feedback, and request for new features or updates. You can choose to uplaod an attachment to show what errors you have encountered. Click `send mail` to send the e-mail after completing the form. Currently this feature is not working, so if you have want to report bugs, send a feedback, and request for new features or updates, please send an e-mail to winsonfz.yang@gmail.com.
 
 
 Contact me @ winsonfz.yang@gmail.com for feedback or use the link to file bugs/features/pull requests!
