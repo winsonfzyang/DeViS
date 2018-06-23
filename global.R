@@ -1,7 +1,8 @@
 suppressMessages ({
   
   if (!require("pacman")) install.packages("pacman")
-  pacman::p_load(shiny,
+  pacman::p_load(devtools,
+                 shiny,
                  shinyjs,   # Shiny json
                  readxl,    # Read excel files
                  ggplot2,   # plotting 
@@ -29,6 +30,11 @@ suppressMessages ({
   if (!suppressWarnings(require(table1, quietly=TRUE))) {
       devtools::install_github("benjaminrich/table1")
       library(table1)
+  }
+  
+  if (!suppressWarnings(require(ggrepel, quietly=TRUE))) {
+    devtools::install_github("slowkow/ggrepel@0.6.6")
+    library(ggrepel)
   }
 
 })
