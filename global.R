@@ -1,8 +1,8 @@
 suppressMessages ({
 
-  if (!require("pacman")) {
+  #if (!require("pacman")) {
     install.packages("pacman")
-  }
+  #}
   require("pacman")
   pacman::p_load(devtools,
                  shiny,
