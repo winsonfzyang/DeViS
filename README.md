@@ -18,7 +18,7 @@ Rscript /home/YOURNAME/DEViS/run_github.R
 
 If you are using Windows to run DEViS, you would have to find where the Rscript.exe file is located at.
 ```
-"C:\Program Files\R\R-3.4.3\bin\Rscript.exe" "C:\Users\YOURNAME\DEViS\run_github.R"
+"C:\Program Files\R\R-3.5.0\bin\Rscript.exe" "C:\Users\YOURNAME\DEViS\run_github.R"
 ```
 
 
@@ -67,14 +67,15 @@ sendmailR, Hmisc, quantreg, markdown, rlang,and lazyeval.
 
 The app will try to install ggkm and table1 (if not found) using the commands below:
 ```
-if (!require("pacman")) install.packages("pacman")
-  pacman::p_load(shiny, shinyjs, readxl, ggplot2, plotly, ggrepel, scales, DT, tidyr, dplyr, car, lm.beta, lmSupport,
+if (!require("pacman")) {
+  install.packages("pacman", repos = 'http://cran.rstudio.com/')
+  require("pacman")
+}
+
+pacman::p_load(shiny, shinyjs, readxl, ggplot2, plotly, ggrepel,
+  scales, DT, tidyr, dplyr, car, lm.beta, lmSupport,
   sendmailR, Hmisc, quantreg, markdown, rlang,and lazyeval)
+
 devtools::install_github("sachsmc/ggkm")
 devtools::install_github("benjaminrich/table1")
-```
-Make sure that you are using this version of ggrepel
-```
-devtools::install_github("slowkow/ggrepel@0.6.6")
-
 ```
