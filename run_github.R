@@ -5,4 +5,5 @@ if (!suppressWarnings(require(shiny, quietly=TRUE))) {
 }
 
 # Run DEViS using runGitHub
-runGitHub("DEViS", "winsonfzyang")
+runGitHub("DEViS", "winsonfzyang",
+          launch.browser = TRUE)
