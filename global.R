@@ -1,9 +1,9 @@
 suppressMessages ({
 
-  #if (!require("pacman")) {
-    install.packages("pacman")
-  #}
-  require("pacman")
+  if (!require("pacman")) {
+    install.packages("pacman", repos = 'http://cran.rstudio.com/')
+    require("pacman")
+  }
   pacman::p_load(devtools,
                  shiny,
                  shinyjs,   # Shiny json
