@@ -1,6 +1,6 @@
 # Install Shiny
 if (!suppressWarnings(require(shiny, quietly=TRUE))) {
-  install.packages("shiny")
+  install.packages('shiny', repos = 'http://cran.rstudio.com/')
   library(shiny)
 }
 
