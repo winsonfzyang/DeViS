@@ -2964,6 +2964,7 @@ function(input, output, session) {
     
     stacked <- finalplotdata()
     lvl <- unique(as.character(stacked[,"yvars"]))
+    validate(need(input$x != '', "No x variable selected"))
     validate(need(!(lvl=="None" && all(is.na(stacked[,"yvalues"]))), 
                   "No y variable(s) selected"))
     if (input$dstatscolextrain != ".") {
@@ -2994,7 +2995,7 @@ function(input, output, session) {
       }  
     }
     # Check with smouksassi:
-    #df[,input$x]  <- as.factor(as.character( df[,input$x]))
+    # df[,input$x]  <- as.factor(as.character( df[,input$x]))
     attr(df, "vars") <- vars
     df
   })
@@ -3066,7 +3067,7 @@ function(input, output, session) {
   output$filpthelevels <- renderUI({
     df <-values$maindata
     if (is.null(df)) return(NULL)
-    if(!is.null(df) && input$dstatscolextrain!="."){
+    if(!is.null(df) && input$dstatscolextrain!="None"){
       checkboxInput('flipthelevelsin', 'Flip the Order of the Columns', value = FALSE)
     }
   })  
@@ -3100,9 +3101,11 @@ function(input, output, session) {
       
       LHS <- paste(vars, collapse=" + ")
       RHS <- input$x
-      if (!is.null(df[[input$dstatscolextrain]])) {
+      # if (!is.null(df[[input$dstatscolextrain]])) {
+      if (input$dstatscolextrain != ".") { ## Change to "."
         RHS <- paste(c(RHS, input$dstatscolextrain), collapse=" * ")
-        if (!is.null(input$flipthelevelsin)&&input$flipthelevelsin )
+        # if (!is.null(input$flipthelevelsin)&&input$flipthelevelsin )
+        if (input$flipthelevelsin != "FALSE")
         {
           RHS <- paste(c( input$dstatscolextrain,RHS), collapse=" * ")
           
@@ -3114,8 +3117,9 @@ function(input, output, session) {
       overall <- if (input$table_incl_overall) "Overall" else FALSE
       t <- capture.output(table1(formula, data=df, overall=overall,
                                  topclass=paste("Rtable1", input$table_style),
-                                 render.continuous=dstatsRenderCont(),
-                                 standalone=FALSE))
+                                 render.continuous=dstatsRenderCont()#,
+                                 # standalone=FALSE
+                                 ))
       values$prevTable <- t
       t
     }
@@ -3197,6 +3201,64 @@ function(input, output, session) {
   observeEvent(input$update_table_btn, {
     values$updateTable <- TRUE
   })
+  
+  #### Test tab ####
+  
+  # output$testformula <- renderPrint({
+  #   # Don't generate a new table if the user wants to refresh manually
+  #   if (!input$auto_update_table) {
+  #     if (values$updateTable == TRUE) {
+  #       values$updateTable <- FALSE
+  #     } else {
+  #       return(values$prevTable)
+  #     }
+  #   }
+  #   validate(
+  #     need(!is.null(dstatsTableData()), "Please select a data set") 
+  #   )
+  #   
+  #   df <- dstatsTableData() 
+  #   
+  #   if(!is.null(df)) {
+  #     vars <- attr(df, "vars")
+  #     names(vars) <- vars
+  #     for (i in seq_along(vars)) {
+  #       if (i <= quickRelabel$numTotal) {
+  #         lab <- as.character(input[[paste0("quick_relabel_", i)]])
+  #         if (length(lab) > 0) {
+  #           label(df[[vars[i]]]) <- lab
+  #         }
+  #       }
+  #     }
+  #     
+  #     LHS <- paste(vars, collapse=" + ")
+  #     RHS <- input$x
+  #     if (input$dstatscolextrain != ".") {
+  #       RHS <- paste(c(RHS,input$dstatscolextrain), collapse="*")
+  #       if (input$flipthelevelsin != "FALSE"){
+  #         RHS <- paste(c( input$dstatscolextrain,RHS), collapse=" * ")
+  #         }
+  #       }
+  #     formula <- as.formula(paste("~", paste(c(LHS, RHS), collapse=" | ")))
+  #     
+  #     overall <- if (input$table_incl_overall) "Overall" else FALSE
+  #     t <- capture.output(table1(formula, data=df, overall=overall,
+  #                                topclass=paste("Rtable1", input$table_style),
+  #                                render.continuous=dstatsRenderCont()
+  #                                ) # Removed standalone = False
+  #                         )
+  #     values$prevTable <- t
+  #     formula
+  #   }
+  #   
+  #   })
+  # 
+  # output$mytabletest <- renderDataTable({
+  #   df <- dstatsTableDataStacked()  # need to change this to only dataset
+  #   validate(need(!is.null(df), "Please select a data set"))
+  #   
+  #   datatable(df)
+  # })
   
   #### E-mail Tab ####
   sendmymail <- reactive({

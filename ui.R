@@ -1022,7 +1022,7 @@ fluidPage(
                             selectizeInput("dstats_cont_list",
                                            label="Statistics to display for continuous variables (per line)",
                                            choices=allstats,
-                                           selected=c("Mean (SD)", "Median [Min, Max]"),
+                                           selected=c("Mean (SD)"),
                                            multiple=TRUE,
                                            options=list(plugins=list('drag_drop','remove_button'))),
                             numericInput("dstats_sigfig",
@@ -1036,11 +1036,12 @@ fluidPage(
                  )) #shinyjs
         ), #tabpanel descriptive stats
         
-        # #### Test tab -----------------
+        #### Test tab -----------------
         # tabPanel("Test Tab",
-        #          dataTableOutput("mytabletest")
+        #          # dataTableOutput("mytabletest")
+        #          verbatimTextOutput("testformula")
         # ), #tabPanel Test tab
-        # 
+
         #### Get Plot Code tab ----
         tabPanel(
           'Plot Code',
