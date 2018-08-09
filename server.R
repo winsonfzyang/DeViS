@@ -2205,22 +2205,22 @@ function(input, output, session) {
         # ###### RQSS SECTION END
         # 
         # ###### Corr coefficient Start ----
-        # if(input$addcorrcoeff&&!is.null(cors)&&!input$addcorrcoeffignoregroup) {
-        #   p <- p +
-        #    geom_text_repel(data=data.frame(cors), aes(label=paste("italic(r) == ", corcoeff)), 
-        #   x=Inf, y=Inf, parse=TRUE,size=5)
-        # }
-        # 
-        # if(input$addcorrcoeff&&!is.null(cors)&&input$addcorrcoeffignoregroup) {
-        #   p <- p +
-        #     geom_text_repel(data=data.frame(cors), aes(group=NULL,label=paste("italic(r) == ", corcoeff)), 
-        #                     x=Inf, y=Inf, parse=TRUE,size=5)
-        # }
-        # 
-        # 
-        # #### Corr coefficient END
-        # 
-        # 
+        if(input$addcorrcoeff&&!is.null(cors)&&!input$addcorrcoeffignoregroup) {
+          p <- p +
+           geom_text_repel(data=data.frame(cors), aes(label=paste("italic(r) == ", corcoeff)),
+          x=Inf, y=Inf, parse=TRUE,size=5)
+        }
+
+        if(input$addcorrcoeff&&!is.null(cors)&&input$addcorrcoeffignoregroup) {
+          p <- p +
+            geom_text_repel(data=data.frame(cors), aes(group=NULL,label=paste("italic(r) == ", corcoeff)),
+                            x=Inf, y=Inf, parse=TRUE,size=5)
+        }
+
+
+        #### Corr coefficient END
+
+
         # ###### KM SECTION START ----
         # 
         # if (input$KM!="None") {

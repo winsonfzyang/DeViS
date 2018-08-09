@@ -5,7 +5,7 @@ DEViS stands for Data Exploration Visualization and Statistics. DEViS enables yo
 **Export Plots**. Once a plot is saved in the **Scatter/Regression Plot** tab by providing a name and hitting the **Save plot** star button it will become available for exporting. You can export in portrait, landscape and multiple plots per page.  
 
 ### Installation and running DEViS
-You can download DEViS using the Clone or download button. You do not have to install RStudio to run DEViS. You can install R (link to download <a href="https://cran.r-project.org/">here</a>) and use it to run DEViS. Once you have installed R, open it an type the code below, depending on where you have downloaded DEViS into.
+You can download DEViS using the Clone or download button. You would also have to install RStudio (link to download <a href="https://www.rstudio.com/products/rstudio/download/#download">here</a>), and R (link to download <a href="https://cran.r-project.org/">here</a>) to run DEViS. Once you have installed R and RStudio, open a terminal or command prompt an type the code below, depending on where you have downloaded DEViS into.
 
 ```
 Rscript <directory>/run_github.R
