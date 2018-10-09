@@ -1258,7 +1258,7 @@ function(input, output, session) {
         # ---- Correlation ----
         if(input$addcorrcoeff){
           if( input$addcorrcoeffignoregroup){
-            listvarcor <- c(input$colorin,input$fillin,
+            listvarcor <- c(input$fillin,#input$colorin,
                             input$facetrowin,input$facetcolin,input$facetrowextrain,input$facetcolextrain)
           }
           if( !input$addcorrcoeffignoregroup){
@@ -2213,7 +2213,8 @@ function(input, output, session) {
 
         if(input$addcorrcoeff&&!is.null(cors)&&input$addcorrcoeffignoregroup) {
           p <- p +
-            geom_text_repel(data=data.frame(cors), aes(group=NULL,label=paste("italic(r) == ", corcoeff)),
+            geom_text_repel(data=data.frame(cors), aes(group=NULL,color=NULL,
+                                                       label=paste("italic(r) == ", corcoeff)),
                             x=Inf, y=Inf, parse=TRUE,size=5)
         }
 
@@ -3204,61 +3205,8 @@ function(input, output, session) {
   
   #### Test tab ####
   
-  # output$testformula <- renderPrint({
-  #   # Don't generate a new table if the user wants to refresh manually
-  #   if (!input$auto_update_table) {
-  #     if (values$updateTable == TRUE) {
-  #       values$updateTable <- FALSE
-  #     } else {
-  #       return(values$prevTable)
-  #     }
-  #   }
-  #   validate(
-  #     need(!is.null(dstatsTableData()), "Please select a data set") 
-  #   )
-  #   
-  #   df <- dstatsTableData() 
-  #   
-  #   if(!is.null(df)) {
-  #     vars <- attr(df, "vars")
-  #     names(vars) <- vars
-  #     for (i in seq_along(vars)) {
-  #       if (i <= quickRelabel$numTotal) {
-  #         lab <- as.character(input[[paste0("quick_relabel_", i)]])
-  #         if (length(lab) > 0) {
-  #           label(df[[vars[i]]]) <- lab
-  #         }
-  #       }
-  #     }
-  #     
-  #     LHS <- paste(vars, collapse=" + ")
-  #     RHS <- input$x
-  #     if (input$dstatscolextrain != ".") {
-  #       RHS <- paste(c(RHS,input$dstatscolextrain), collapse="*")
-  #       if (input$flipthelevelsin != "FALSE"){
-  #         RHS <- paste(c( input$dstatscolextrain,RHS), collapse=" * ")
-  #         }
-  #       }
-  #     formula <- as.formula(paste("~", paste(c(LHS, RHS), collapse=" | ")))
-  #     
-  #     overall <- if (input$table_incl_overall) "Overall" else FALSE
-  #     t <- capture.output(table1(formula, data=df, overall=overall,
-  #                                topclass=paste("Rtable1", input$table_style),
-  #                                render.continuous=dstatsRenderCont()
-  #                                ) # Removed standalone = False
-  #                         )
-  #     values$prevTable <- t
-  #     formula
-  #   }
-  #   
-  #   })
-  # 
-  # output$mytabletest <- renderDataTable({
-  #   df <- dstatsTableDataStacked()  # need to change this to only dataset
-  #   validate(need(!is.null(df), "Please select a data set"))
-  #   
-  #   datatable(df)
-  # })
+  
+  
   
   #### E-mail Tab ####
   sendmymail <- reactive({

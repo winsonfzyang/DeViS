@@ -354,7 +354,7 @@ fluidPage(
       
             # ---- Plot types -----
             tabPanel(
-              "Plot types, Points, Lines (?)",
+              "Plot types, Points, Lines",
               value = "points_lines",
               fluidRow(
                 
@@ -418,7 +418,7 @@ fluidPage(
             
             # ---- Color/Group ----
             tabPanel(
-              "Color/Group/Split/Size/Fill Mappings (?)",
+              "Color/Group/Split/Size/Fill Mappings",
               fluidRow(
                 column (12, hr()),
                 column (3, uiOutput("colour"),uiOutput("group")),
@@ -544,7 +544,7 @@ fluidPage(
             # ),
             # ---- regression ----
             tabPanel(
-              "Smooth/Linear/Logistic Regressions (?)",
+              "Smooth/Linear/Logistic Regressions",
               
               fluidRow(
                 column(12,hr()),
@@ -561,7 +561,7 @@ fluidPage(
                     " input.Smooth!= 'None' ",
                     selectInput('smoothmethod', label ='Smoothing Method',
                                 choices=c("Loess" ="loess","Linear Fit"="lm","Logistic"="glm"),
-                                multiple=FALSE, selectize=TRUE,selected="loess"),
+                                multiple=FALSE, selectize=TRUE,selected="Linear Fit"),
                     
                     sliderInput("loessens", "Loess Span:", min=0, max=1, value=c(0.75),step=0.05),
                     selectInput('loessfamily', label ='Loess Family:',
@@ -730,7 +730,7 @@ fluidPage(
             # ), #tabpanel km
             # ---- Correlation section ----
             tabPanel(
-              "Correlation Coefficient (?)",
+              "Correlation Coefficient",
               fluidRow(
                 column(12,hr()),
                 checkboxInput('addcorrcoeff',"Add Correlation Coefficient to the plot ?"),
@@ -1039,7 +1039,7 @@ fluidPage(
         #### Test tab -----------------
         # tabPanel("Test Tab",
         #          # dataTableOutput("mytabletest")
-        #          verbatimTextOutput("testformula")
+        #          dataTableOutput("tabletest1")
         # ), #tabPanel Test tab
 
         #### Get Plot Code tab ----

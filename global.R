@@ -1,45 +1,34 @@
 suppressMessages ({
-
-  if (!require("pacman")) {
-    install.packages("pacman", repos = 'http://cran.rstudio.com/')
-    require("pacman")
-  }
-  pacman::p_load(devtools,
-                 shiny,
-                 shinyjs,   # Shiny json
-                 readxl,    # Read excel files
-                 ggplot2,   # plotting
-                 plotly,    # interactive plots
-                 ggrepel,   # Text for ggplot
-                 scales,    # Color stuff
-                 DT,        # Get data table
-                 tidyr,     # Data transformation
-                 dplyr,     # Data transformation
-                 car,       # Regresion diagnostics
-                 lm.beta,   # Regression stuff
-                 lmSupport, # Regression stuff
-                 sendmailR, # Send E-mail
-                 Hmisc,
-                 quantreg,
-                 markdown,
-                 rlang,
-                 lazyeval)
-
-  if (!suppressWarnings(require(ggkm, quietly=TRUE))) {
-    devtools::install_github("sachsmc/ggkm")
-    library(ggkm)
-  }
-
-  if (!suppressWarnings(require(table1, quietly=TRUE))) {
-      devtools::install_github("benjaminrich/table1")
-      library(table1)
-  }
+  library(devtools)
+  library(shiny)
+  library(shinyjs)   # Shiny json
+  library(readxl)    # Read excel files
+  library(ggplot2)   # plotting
+  library(plotly)    # interactive plots
+  library(ggrepel)   # Text for ggplot
+  library(scales)    # Color stuff
+  library(DT)        # Get data table
+  library(tidyr)     # Data transformation
+  library(dplyr)     # Data transformation
+  library(car)       # Regresion diagnostics
+  library(lm.beta)   # Regression stuff
+  library(lmSupport) # Regression stuff
+  library(sendmailR) # Send E-mail
+  library(Hmisc)
+  library(quantreg)
+  library(markdown)
+  library(rlang)
+  library(lazyeval)
+  devtools::install_github("sachsmc/ggkm")
+  library(ggkm)
+  devtools::install_github("benjaminrich/table1")
+  library(table1)
   
 })
 
-source("functions\\diagnose_regression.R")
-source("functions\\RegressionPlots.R")
-source("functions\\sourceable.R") # Not going to show source code for plot
+source("functions/diagnose_regression.R")
+source("functions/RegressionPlots.R")
+source("functions/sourceable.R") # Not going to show source code for plot
 
 options(shiny.maxRequestSize=250*1024^2)
 #options(shiny.reactlog=TRUE)
