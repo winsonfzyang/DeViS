@@ -3209,8 +3209,8 @@ function(input, output, session) {
   
   
   #### E-mail Tab ####
-  sendmymail <- reactive({
-    if(is.null(input$send) || input$send==0) return(NULL)
+  output$sendmymail <- reactive({
+    if(is.null(input$send) | input$send==0) return(NULL)
     name <- isolate(input$name)
     email <- isolate(input$email)
     from <- "<DeViS@gmail.com>"
@@ -3227,11 +3227,20 @@ function(input, output, session) {
     
     if (is.null(input$attachment)){Email_Att <- list(body)}
     else Email_Att <- list(body,attachment)
-    
-    sendmail(from, to, subject, Email_Att,control=list(smtpServer="ASPMX.L.GOOGLE.COM")
-    ) #sendmail
+    if(input$send){
+      sendmail(from, to, subject, Email_Att,control=list(smtpServer="ASPMX.L.GOOGLE.COM"))} else {
+        return(NULL)
+        }
+    # ) #sendmail
   }) #sendmymail
   
+  # Print sent E-mail
+  output$printsend <- renderText({
+    if(input$send){
+      "E-mail Sent!"
+        return(NULL)
+      }
+  })
   #### Plot Code tab ------
 
   # Show the source code of the plot

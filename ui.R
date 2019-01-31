@@ -1039,7 +1039,7 @@ fluidPage(
         #### Test tab -----------------
         # tabPanel("Test Tab",
         #          # dataTableOutput("mytabletest")
-        #          dataTableOutput("tabletest1")
+        #          verbatimTextOutput("printsend")
         # ), #tabPanel Test tab
 
         #### Get Plot Code tab ----
@@ -1053,17 +1053,14 @@ fluidPage(
         tabPanel("E-mail",
                  mainPanel(
                    h3("Please use this tab if you want to send a message. You can report bugs, send a feedback, or request for a new feature."),
-                   h4("E-MAIL TAB IS CURRENTLY NOT WORKING."),
+                   h4("CURRENT BUG: NO FEEDBACK REGARDING IF YOUR E-MAIL IS SENT"),
                    textInput("name", "Name:", ""),
                    textInput("email", "E-mail:", ""),
                    textInput("subject", "Subject:", value=""),
                    fileInput('attachment', 'Upload Attachment'),
                    textAreaInput("body", "Your Message:", "Type your message here", width = "1000px"),
                    actionButton("send", "Send mail"),
-                   renderUI({
-                     if(is.null(sendmymail())) return(NULL)
-                     validate(need(is.null(sendmymail()$msg), 'Email Sent'))
-                   })
+                   textOutput("printsend")
                  ) #mainPanel
         ) #tabPanel E-mail
         #### END -------------------
